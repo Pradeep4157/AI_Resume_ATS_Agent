@@ -1,1 +1,72 @@
 @import "tailwindcss";
+
+/* 1. Define Local SF Pro Font Faces */
+@font-face {
+  font-family: "SF Pro Custom";
+  src: url("/fonts/SFPRODISPLAYREGULAR.OTF") format("opentype");
+  font-weight: 400;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "SF Pro Custom";
+  src: url("/fonts/SFPRODISPLAYMEDIUM.OTF") format("opentype");
+  font-weight: 500;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "SF Pro Custom";
+  src: url("/fonts/SFPRODISPLAYBOLD.OTF") format("opentype");
+  font-weight: 700;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "SF Mono Custom";
+  src: url("/fonts/SF-Mono-Bold.otf") format("opentype");
+  font-weight: 700;
+  font-style: normal;
+}
+
+/* 2. Apple / macOS Dark Theme System Tokens */
+@theme {
+  --font-sans: "SF Pro Custom", -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Segoe UI", Roboto, sans-serif;
+  --font-mono: "SF Mono Custom", "SF Mono", SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+
+  /* Apple Dark Palette */
+  --color-apple-dark-bg: #000000;
+  --color-apple-dark-surface: #1C1C1E;
+  --color-apple-dark-surface-subtle: #2C2C2E;
+  --color-apple-dark-border: rgba(255, 255, 255, 0.1);
+
+  /* Dark Typography Colors */
+  --color-apple-text-primary: #F5F5F7;
+  --color-apple-text-secondary: #A1A1A6;
+  --color-apple-text-muted: #86868B;
+
+  /* Accent */
+  --color-apple-blue: #0A84FF;
+  --color-apple-blue-hover: #0071E3;
+}
+
+@layer base {
+  body {
+    background-color: var(--color-apple-dark-bg);
+    color: var(--color-apple-text-primary);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+}
+
+/* Apple macOS Dark Frosted Glass Effect */
+.apple-glass-dark {
+  background: rgba(28, 28, 30, 0.75);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+}
+
+.apple-window-shadow-dark {
+  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(255, 255, 255, 0.1);
+}
