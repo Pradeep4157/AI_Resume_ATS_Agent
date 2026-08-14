@@ -14,7 +14,7 @@ export default function App() {
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Everything comes directly from your stream hook!
-  const { state, isProcessing, isComplete, startAnalysis, sendResponse } = useAgentStream();
+  const { state, isProcessing, isComplete, startAnalysis, sendResponse, reformatAnswer } = useAgentStream();
 
   // Get current parsed or optimized resume from agent stream state
   const currentResumeData = state?.optimized_resume || state?.parsed_resume;
@@ -58,10 +58,11 @@ export default function App() {
   if (hasStarted || currentResumeData) {
     return (
       <Workspace
-        resumeData={currentResumeData}
+        state={state}
         isProcessing={isProcessing}
         isComplete={isComplete}
         sendResponse={sendResponse}
+        reformatAnswer={reformatAnswer}
       />
     );
   }

@@ -1,19 +1,49 @@
 from dotenv import load_dotenv
 load_dotenv()
-
 import os
-from fastapi import FastAPI, UploadFile, File, Form, HTTPException
+from fastapi import FastAPI, UploadFile, File, Form, HTTPException, Body
 from fastapi.middleware.cors import CORSMiddleware
-from typing import Optional
-
-
+from typing import Optional, Union
 # Import parser utility and updated agent logic
 from parser import extract_text_from_file
-from agent import parse_and_normalize_resume, NormalizedResume
+
+from agent import (
+    ProjectAnswerInput,
+    ExperienceAnswerInput,
+    AchievementAnswerInput,
+    ReformatRequest,
+    ReformattedText,
+    NormalizeRequest,
+    PolishedBullets,
+    reformat_gap_answer,
+    normalize_answer_text,
+    parse_and_normalize_resume,
+    analyze_gaps,
+    polish_gap_answer,
+)
 import io
 import pdfplumber
 
+
 app = FastAPI(title="ResuMax AI Engine")
+
+
+
+@app.post("/api/reformat-answer", response_model=ReformattedText)
+async def reformat_answer(payload: ReformatRequest):
+    return reformat_gap_answer(payload.answer_input)
+
+
+@app.post("/api/normalize-answer", response_model=PolishedBullets)
+async def normalize_answer(payload: NormalizeRequest):
+    return normalize_answer_text(payload.text)
+
+@app.post("/api/polish-answer", response_model=PolishedBullets)
+async def polish_answer(
+    payload: Union[ProjectAnswerInput, ExperienceAnswerInput, AchievementAnswerInput] = Body(...)
+):
+    return polish_gap_answer(payload)
+
 @app.post("/api/analyze")
 async def analyze_resume(
     resume_file: Optional[UploadFile] = File(None),
@@ -31,13 +61,17 @@ async def analyze_resume(
             status_code=400, detail="Please provide a resume file or text."
         )
 
-    # Extract structured resume using Gemini
     parsed_resume = parse_and_normalize_resume(text_to_parse)
+    gap_analysis = analyze_gaps(parsed_resume, jd_text)
 
     return {
         "status": "success",
         "parsed_resume": parsed_resume,
         "jd_text": jd_text,
+        "ats_score": gap_analysis.ats_score,
+        "target_domain": gap_analysis.target_domain,
+        "missing_keywords": gap_analysis.missing_keywords,
+        "gap_questions": [q.model_dump() for q in gap_analysis.gap_questions],
     }
 
 def extract_pdf_content(file_bytes: bytes) -> str:

@@ -1,336 +1,187 @@
-import React, { useState } from "react";
-import { Download, FileText } from "lucide-react";
-import type { ResumeData } from "../types/resume";
+import React, { useRef, useState } from "react";
+import { ZoomIn, ZoomOut, RotateCcw, Download } from "lucide-react";
+import { JakeTemplate } from "./templates/JakeTemplate";
+import { CompactTemplate } from "./templates/CompactTemplate";
+import { ExecutiveTemplate } from "./templates/ExecutiveTemplate";
+import { FaangTemplate } from "./templates/FaangTemplate";
 
 interface ResumePreviewProps {
-  resumeData?: any; // Accepting our normalized resume JSON
+  resumeData: any;
   isComplete?: boolean;
+  selectedTemplate?: string;
 }
 
-type TemplateChoice = "jake" | "faang";
-
-const formatUrl = (url: string) => {
-  if (!url) return "";
-  const href = url.startsWith("http") ? url : `https://${url}`;
-  const display = url.replace(/^https?:\/\/(www\.)?/, "").replace(/\/$/, "");
-  return { href, display };
-};
 export const ResumePreview: React.FC<ResumePreviewProps> = ({
   resumeData,
-  isComplete = false,
+  isComplete,
+  selectedTemplate = "jake",
 }) => {
-  const [selectedTemplate, setSelectedTemplate] = useState<TemplateChoice>("jake");
+  const [zoom, setZoom] = useState<number>(0.65);
+  const printContainerRef = useRef<HTMLDivElement>(null);
 
-  if (!resumeData) {
-    return (
-      <div className="h-full bg-[#1C1C1E] rounded-xl border border-white/10 p-8 flex flex-col items-center justify-center text-center font-sans">
-        <FileText size={32} className="text-[#86868B] mb-2.5" />
-        <h4 className="text-xs font-semibold text-[#F5F5F7]">Document Canvas</h4>
-        <p className="text-[11px] text-[#86868B] max-w-xs mt-1">
-          Upload or parse a resume to preview document...
-        </p>
-      </div>
-    );
-  }
+  // Clean Native Print Window Handler
+  const handleExportPDF = () => {
+    const printElement = printContainerRef.current;
+    if (!printElement) return;
 
-  const { basics, skills, experience, projects, achievements, education } = resumeData;
+    // Create a temporary hidden iframe to isolate the print layout completely
+    const iframe = document.createElement("iframe");
+    iframe.style.position = "fixed";
+    iframe.style.right = "0";
+    iframe.style.bottom = "0";
+    iframe.style.width = "0";
+    iframe.style.height = "0";
+    iframe.style.border = "none";
+    document.body.appendChild(iframe);
+
+    const doc = iframe.contentWindow?.document;
+    if (!doc) return;
+
+    // Grab all loaded application styles (Tailwind, fonts, etc.)
+    const styleTags = Array.from(
+      document.querySelectorAll("style, link[rel='stylesheet']")
+    )
+      .map((el) => el.outerHTML)
+      .join("\n");
+
+    // Write a clean, isolated A4 document into the iframe
+    doc.open();
+    doc.write(`
+      <!DOCTYPE html>
+      <html>
+        <head>
+          <title>${resumeData?.basics?.name || "Resume"}_CV</title>
+          ${styleTags}
+          <style>
+            @page {
+              size: A4 portrait;
+              margin: 0;
+            }
+            html, body {
+              margin: 0 !important;
+              padding: 0 !important;
+              background: #ffffff !important;
+              width: 210mm !important;
+              min-height: 297mm !important;
+              -webkit-print-color-adjust: exact !important;
+              print-color-adjust: exact !important;
+            }
+            .print-wrapper {
+              width: 210mm !important;
+              min-height: 297mm !important;
+              padding: 12mm !important;
+              box-sizing: border-box !important;
+              background: #ffffff !important;
+              color: #000000 !important;
+            }
+          </style>
+        </head>
+        <body>
+          <div class="print-wrapper">
+            ${printElement.innerHTML}
+          </div>
+        </body>
+      </html>
+    `);
+    doc.close();
+
+    // Trigger native window print after DOM render
+    setTimeout(() => {
+      iframe.contentWindow?.focus();
+      iframe.contentWindow?.print();
+
+      // Remove iframe after user closes dialog
+      setTimeout(() => {
+        if (document.body.contains(iframe)) {
+          document.body.removeChild(iframe);
+        }
+      }, 1000);
+    }, 300);
+  };
+
+  const renderActiveTemplate = () => {
+    switch (selectedTemplate) {
+      case "compact":
+        return <CompactTemplate data={resumeData} />;
+      case "executive":
+        return <ExecutiveTemplate data={resumeData} />;
+      case "faang":
+        return <FaangTemplate data={resumeData} />;
+      case "jake":
+      default:
+        return <JakeTemplate data={resumeData} />;
+    }
+  };
 
   return (
-    <div className="h-full bg-[#1C1C1E] rounded-xl border border-white/10 flex flex-col overflow-hidden font-sans shadow-2xl">
-      {/* Top Toolbar */}
-      <div className="flex items-center justify-between px-5 py-2.5 border-b border-white/10 bg-[#2C2C2E]/60">
+    <div className="flex flex-col items-center w-full h-full overflow-hidden">
+      {/* Controls Bar */}
+      <div className="w-full shrink-0 flex items-center justify-between bg-[#1C1C1E] px-4 py-2 rounded-lg border border-white/10 mb-3 shadow-md text-xs text-[#86868B]">
         <div className="flex items-center gap-2">
-          <span className="w-2 h-2 rounded-full bg-[#30D158]" />
-          <span className="text-xs font-medium text-[#A1A1A6]">Document Preview</span>
+          <span className="font-semibold text-white">A4 Document Canvas</span>
+          {isComplete && (
+            <span className="bg-green-500/10 text-green-400 border border-green-500/20 px-2 py-0.5 rounded text-[10px]">
+              Ready
+            </span>
+          )}
         </div>
 
-        {/* Template Selector & Export Button */}
-        <div className="flex items-center gap-3">
-          <label className="text-[11px] text-[#86868B] font-medium">Template:</label>
-          <select
-            value={selectedTemplate}
-            onChange={(e) => setSelectedTemplate(e.target.value as TemplateChoice)}
-            className="bg-[#1C1C1E] border border-white/10 text-[#F5F5F7] text-xs rounded-lg px-2.5 py-1 focus:outline-none focus:ring-1 focus:ring-[#0A84FF]"
-          >
-            <option value="jake">Jake's Resume (CS Classic)</option>
-            <option value="faang">FAANG Compact (Modern)</option>
-          </select>
-
+        {/* Zoom Controls */}
+        <div className="flex items-center gap-1 bg-black/40 p-1 rounded-lg border border-white/5">
           <button
-            onClick={() => window.print()}
-            className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#0A84FF] hover:bg-[#0071E3] text-white font-medium text-xs transition-all shadow-sm cursor-pointer"
+            onClick={() => setZoom((z) => Math.max(0.4, z - 0.1))}
+            className="p-1 hover:text-white hover:bg-white/10 rounded transition"
+            title="Zoom Out"
           >
-            <Download size={13} />
-            <span>Export PDF</span>
+            <ZoomOut size={14} />
+          </button>
+          <span className="w-10 text-center font-mono text-[11px] text-white">
+            {Math.round(zoom * 100)}%
+          </span>
+          <button
+            onClick={() => setZoom((z) => Math.min(1.3, z + 0.1))}
+            className="p-1 hover:text-white hover:bg-white/10 rounded transition"
+            title="Zoom In"
+          >
+            <ZoomIn size={14} />
+          </button>
+          <button
+            onClick={() => setZoom(0.65)}
+            className="p-1 hover:text-white hover:bg-white/10 rounded transition ml-1"
+            title="Reset Zoom"
+          >
+            <RotateCcw size={12} />
           </button>
         </div>
+
+        {/* Export PDF Button */}
+        <button
+          onClick={handleExportPDF}
+          className="flex items-center gap-1.5 bg-[#0A84FF] hover:bg-[#0071E3] text-white font-medium px-3 py-1.5 rounded-md shadow transition"
+        >
+          <Download size={14} />
+          <span>Export PDF</span>
+        </button>
       </div>
 
-      {/* Document Sheet Canvas */}
-      <div className="flex-1 overflow-y-auto p-6 bg-black">
-        <div className="max-w-3xl mx-auto">
-          {selectedTemplate === "jake" ? (
-            /* ================= JAKE'S RESUME TEMPLATE ================= */
-            <div className="bg-white text-black font-serif p-8 rounded-lg shadow-2xl text-[12px] leading-relaxed">
-              {/* Header */}
-              <div className="text-center border-b border-black pb-2 mb-3">
-                <h1 className="text-2xl font-bold uppercase tracking-wide">{basics?.name}</h1>
-                <p className="text-[11px] text-gray-700 mt-1">
-                  {[basics?.phone, basics?.email, basics?.location, basics?.links]
-                    .filter(Boolean)
-                    .join("  |  ")}
-                </p>
-              </div>
-
-              {/* Education */}
-              {education?.length > 0 && (
-                <div className="mb-3">
-                  <h2 className="font-bold uppercase text-[11px] border-b border-black mb-1 font-sans">
-                    Education
-                  </h2>
-                  {education.map((edu: any, idx: number) => (
-                    <div key={idx} className="flex justify-between items-baseline my-0.5">
-                      <div>
-                        <span className="font-bold">{edu.institution}</span> — <span>{edu.degree}</span>
-                      </div>
-                      <span className="text-[11px] font-mono">{edu.dates}</span>
-                    </div>
-                  ))}
-                </div>
-              )}
-
-              {/* Skills */}
-              {skills?.length > 0 && (
-                <div className="mb-3">
-                  <h2 className="font-bold uppercase text-[11px] border-b border-black mb-1 font-sans">
-                    Technical Skills
-                  </h2>
-                  <p className="text-[11px]">
-                    <span className="font-bold">Languages & Tools: </span>
-                    {skills.join(", ")}
-                  </p>
-                </div>
-              )}
-
-              {/* Experience */}
-              {experience?.length > 0 && (
-                <div className="mb-3">
-                  <h2 className="font-bold uppercase text-[11px] border-b border-black mb-1.5 font-sans">
-                    Experience
-                  </h2>
-                  {experience.map((exp: any) => (
-                    <div key={exp.id || exp.role} className="mb-2">
-                      <div className="flex justify-between font-bold">
-                        <span>{exp.role}</span>
-                        <span className="text-[11px] font-mono font-normal">{exp.dates}</span>
-                      </div>
-                      <div className="flex justify-between italic text-[11px] text-gray-800 mb-0.5">
-                        <span>{exp.company}</span>
-                        {exp.location && <span>{exp.location}</span>}
-                      </div>
-                      <ul className="list-disc list-outside ml-4 space-y-0.5 text-[11px] text-gray-900">
-                        {exp.bullets?.map((b: string, i: number) => (
-                          <li key={i}>{b}</li>
-                        ))}
-                      </ul>
-                    </div>
-                  ))}
-                </div>
-              )}
-
-                {/* Projects - Jake's Template */}
-                {projects?.length > 0 && (
-                <div className="mb-3">
-                    <h2 className="font-bold uppercase text-[11px] border-b border-black mb-1.5 font-sans">
-                    Projects
-                    </h2>
-                    {projects.map((proj: any) => {
-                    const urlInfo = proj.link ? formatUrl(proj.link) : null;
-                    return (
-                        <div key={proj.id || proj.name} className="mb-2">
-                        <div className="flex justify-between items-baseline">
-                            <span className="font-bold">
-                            {proj.name}
-                            {proj.tech_stack?.length > 0 && (
-                                <span className="font-normal italic text-[11px] text-gray-700">
-                                {" "}| {proj.tech_stack.join(", ")}
-                                </span>
-                            )}
-                            </span>
-                            {urlInfo && (
-                            <a
-                                href={urlInfo.href}
-                                target="_blank"
-                                rel="noreferrer"
-                                className="text-[10px] font-mono text-blue-700 hover:underline"
-                            >
-                                [{urlInfo.display}]
-                            </a>
-                            )}
-                        </div>
-                        <ul className="list-disc list-outside ml-4 space-y-0.5 text-[11px] text-gray-900 mt-0.5">
-                            {proj.bullets?.map((b: string, i: number) => (
-                            <li key={i}>{b}</li>
-                            ))}
-                        </ul>
-                        </div>
-                    );
-                    })}
-                </div>
-                )}
-
-              {/* Achievements */}
-              {achievements?.length > 0 && (
-                <div>
-                  <h2 className="font-bold uppercase text-[11px] border-b border-black mb-1 font-sans">
-                    Achievements & Recognition
-                  </h2>
-                  <ul className="list-disc list-outside ml-4 space-y-0.5 text-[11px] text-gray-900">
-                    {achievements.map((ach: any) => (
-                      <li key={ach.id || ach.title}>
-                        <span className="font-bold">{ach.title}</span>: {ach.details?.join(" • ")}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              )}
-            </div>
-          ) : (
-            /* ================= FAANG COMPACT TEMPLATE ================= */
-            <div className="bg-white text-zinc-900 font-sans p-8 rounded-lg shadow-2xl text-[11px] leading-normal">
-              {/* Header */}
-              <div className="border-b-2 border-zinc-900 pb-2.5 mb-3">
-                <h1 className="text-2xl font-black tracking-tight text-zinc-900">{basics?.name}</h1>
-                <div className="flex flex-wrap gap-2 text-zinc-600 mt-1 text-[10px]">
-                  {[basics?.email, basics?.phone, basics?.location, basics?.links]
-                    .filter(Boolean)
-                    .map((item: string, idx: number) => (
-                      <span key={idx}>
-                        {idx > 0 && <span className="mr-2 text-zinc-400">•</span>}
-                        {item}
-                      </span>
-                    ))}
-                </div>
-              </div>
-
-              {/* Skills */}
-              {skills?.length > 0 && (
-                <div className="mb-3">
-                  <h2 className="text-[10px] font-bold tracking-widest text-zinc-500 uppercase mb-1.5">
-                    Skills & Competencies
-                  </h2>
-                  <div className="flex flex-wrap gap-1">
-                    {skills.map((s: string, i: number) => (
-                      <span
-                        key={i}
-                        className="px-2 py-0.5 bg-zinc-100 border border-zinc-200 text-zinc-800 rounded text-[10px] font-medium"
-                      >
-                        {s}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              {/* Experience */}
-              {experience?.length > 0 && (
-                <div className="mb-3">
-                  <h2 className="text-[10px] font-bold tracking-widest text-zinc-500 uppercase mb-1.5">
-                    Experience
-                  </h2>
-                  {experience.map((exp: any) => (
-                    <div key={exp.id || exp.role} className="mb-2">
-                      <div className="flex justify-between items-baseline font-semibold text-zinc-900">
-                        <span>
-                          {exp.role} <span className="text-zinc-500 font-normal">@ {exp.company}</span>
-                        </span>
-                        <span className="text-[10px] text-zinc-500 font-mono">{exp.dates}</span>
-                      </div>
-                      <ul className="list-disc list-inside space-y-0.5 text-zinc-700 mt-0.5">
-                        {exp.bullets?.map((b: string, i: number) => (
-                          <li key={i}>{b}</li>
-                        ))}
-                      </ul>
-                    </div>
-                  ))}
-                </div>
-              )}
-                {/* Projects - FAANG Template */}
-                {projects?.length > 0 && (
-                <div className="mb-3">
-                    <h2 className="text-[10px] font-bold tracking-widest text-zinc-500 uppercase mb-1.5">
-                    Projects
-                    </h2>
-                    {projects.map((proj: any) => {
-                    const urlInfo = proj.link ? formatUrl(proj.link) : null;
-                    return (
-                        <div key={proj.id || proj.name} className="mb-2">
-                        <div className="flex justify-between items-baseline font-semibold text-zinc-900">
-                            <span>{proj.name}</span>
-                            {urlInfo && (
-                            <a
-                                href={urlInfo.href}
-                                target="_blank"
-                                rel="noreferrer"
-                                className="text-[10px] font-mono text-blue-600 hover:underline"
-                            >
-                                {urlInfo.display}
-                            </a>
-                            )}
-                        </div>
-                        {proj.tech_stack?.length > 0 && (
-                            <p className="text-[10px] text-zinc-500 font-mono mb-0.5">
-                            Stack: {proj.tech_stack.join(" • ")}
-                            </p>
-                        )}
-                        <ul className="list-disc list-inside space-y-0.5 text-zinc-700">
-                            {proj.bullets?.map((b: string, i: number) => (
-                            <li key={i}>{b}</li>
-                            ))}
-                        </ul>
-                        </div>
-                    );
-                    })}
-                </div>
-                )}
-
-              {/* Achievements */}
-              {achievements?.length > 0 && (
-                <div className="mb-3">
-                  <h2 className="text-[10px] font-bold tracking-widest text-zinc-500 uppercase mb-1.5">
-                    Achievements
-                  </h2>
-                  <div className="space-y-0.5 text-zinc-800">
-                    {achievements.map((ach: any) => (
-                      <div key={ach.id || ach.title} className="flex justify-between items-baseline">
-                        <div>
-                          <span className="font-bold">{ach.title}</span> — {ach.details?.join(", ")}
-                        </div>
-                        <span className="text-[9px] uppercase font-bold text-zinc-400">{ach.category}</span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              {/* Education */}
-              {education?.length > 0 && (
-                <div>
-                  <h2 className="text-[10px] font-bold tracking-widest text-zinc-500 uppercase mb-1.5">
-                    Education
-                  </h2>
-                  {education.map((edu: any, idx: number) => (
-                    <div key={idx} className="flex justify-between text-zinc-800">
-                      <span>
-                        <strong className="text-zinc-900">{edu.degree}</strong>, {edu.institution}
-                      </span>
-                      <span className="text-[10px] font-mono text-zinc-500">{edu.dates}</span>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
-          )}
+      {/* Live Canvas Window */}
+      <div className="w-full flex-1 overflow-y-auto flex justify-center items-start p-4 custom-scrollbar">
+        <div
+          style={{
+            transform: `scale(${zoom})`,
+            transformOrigin: "top center",
+            transition: "transform 0.15s ease-out",
+          }}
+          className="shadow-2xl rounded-sm my-2"
+        >
+          {/* Target Printable Area */}
+          <div
+            ref={printContainerRef}
+            id="resume-print-area"
+            className="w-[210mm] min-h-[297mm] bg-white text-black p-[12mm] box-border shadow-2xl"
+          >
+            {renderActiveTemplate()}
+          </div>
         </div>
       </div>
     </div>
