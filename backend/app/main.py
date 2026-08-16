@@ -1,115 +1,343 @@
-import asyncio
+from dotenv import load_dotenv
+
+load_dotenv()
+
+import io
+import os
+from typing import Optional, Union
+
 import json
-import uuid
-from typing import Optional, Dict, Any
-from fastapi import FastAPI, HTTPException
+
+import pdfplumber
+from fastapi import Body, FastAPI, File, Form, HTTPException, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import StreamingResponse
+from fastapi.responses import Response
+from jinja2 import Environment, FileSystemLoader
 from pydantic import BaseModel
+from weasyprint import HTML
 
-from app.graph import app_graph
+from parser import extract_text_from_file
 
-app = FastAPI(title="ATS Resume Maxxer API")
+from agent import (
+    AchievementAnswerInput,
+    ExperienceAnswerInput,
+    NormalizeRequest,
+    PolishedBullets,
+    ProjectAnswerInput,
+    ReformatRequest,
+    ReformattedText,
+    analyze_gaps,
+    normalize_answer_text,
+    parse_and_normalize_resume,
+    polish_gap_answer,
+    reformat_gap_answer,
+)
 
-# Enable CORS for Next.js frontend running on port 3000
+
+# --------------------------------------------------
+# FastAPI application
+# --------------------------------------------------
+
+app = FastAPI(title="ResuMax AI Engine")
+
+
+# --------------------------------------------------
+# CORS
+# --------------------------------------------------
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000", "http://127.0.0.1:3000"],
+    allow_origins=[
+        "http://localhost:5173",
+        "http://127.0.0.1:5173",
+        "http://localhost:3000",
+    ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
-# Request Models
-class StartRequest(BaseModel):
-    raw_resume: str
-    job_description: str
 
-class AnswerRequest(BaseModel):
-    thread_id: str
-    question_id: str
-    user_response: str
+# --------------------------------------------------
+# Jinja2 / PDF configuration
+# --------------------------------------------------
+
+TEMPLATE_DIR = os.path.join(
+    os.path.dirname(os.path.dirname(__file__)),
+    "templates",
+)
+
+jinja_env = Environment(
+    loader=FileSystemLoader(TEMPLATE_DIR)
+)
 
 
-@app.post("/api/start")
-async def start_workflow(req: StartRequest):
-    """Starts a new agent session thread with user inputs."""
-    thread_id = str(uuid.uuid4())
-    config = {"configurable": {"thread_id": thread_id}}
-    
-    initial_state = {
-        "raw_resume": req.raw_resume,
-        "job_description": req.job_description,
-        "current_question_index": 0,
-        "gap_questions": [],
-        "logs": ["Workflow initialized."]
-    }
-    
-    # Run the graph until it reaches the 'interviewer' interrupt or finishes
-    app_graph.invoke(initial_state, config=config)
-    
-    # Fetch current snapshot
-    snapshot = app_graph.get_state(config)
-    
+class ExportPdfRequest(BaseModel):
+    resume: dict
+    template: str = "jake"
+
+
+# --------------------------------------------------
+# Health check
+# --------------------------------------------------
+
+@app.get("/")
+def health_check():
     return {
-        "thread_id": thread_id,
-        "state": snapshot.values,
-        "next_step": snapshot.next
+        "status": "ok",
+        "message": "ResuMax Backend Engine running",
     }
 
 
-@app.post("/api/respond")
-async def record_user_response(req: AnswerRequest):
-    """Updates state with human answer and resumes graph execution."""
-    config = {"configurable": {"thread_id": req.thread_id}}
-    snapshot = app_graph.get_state(config)
-    
-    if not snapshot.values:
-        raise HTTPException(status_code=404, detail="Session not found")
+# --------------------------------------------------
+# Export PDF
+# --------------------------------------------------
 
-    # Update state with the user's response
-    gap_questions = snapshot.values.get("gap_questions", [])
-    curr_idx = snapshot.values.get("current_question_index", 0)
+@app.post("/api/export-pdf")
+async def export_pdf(payload: ExportPdfRequest):
+    template_file_map = {
+        "jake": "jake_resume.html",
+    }
 
-    if curr_idx < len(gap_questions):
-        gap_questions[curr_idx]["user_response"] = req.user_response
+    template_file = template_file_map.get(payload.template)
 
-    # Update state in memory checkpoint
-    app_graph.update_state(config, {"gap_questions": gap_questions})
+    if not template_file:
+        raise HTTPException(
+            status_code=400,
+            detail=f"Unknown template: {payload.template}",
+        )
 
-    # Resume graph execution (None advances past the interrupt)
-    app_graph.invoke(None, config=config)
+    template = jinja_env.get_template(template_file)
 
-    new_snapshot = app_graph.get_state(config)
-    
+    html_content = template.render(**payload.resume)
+
+
+    print("========== RESUME JSON ==========")
+    print(json.dumps(payload.resume, indent=2, ensure_ascii=False))
+
+    with open("debug_resume.json", "w", encoding="utf-8") as f:
+        json.dump(payload.resume, f, indent=2, ensure_ascii=False)
+
+    template = jinja_env.get_template(template_file)
+
+    html_content = template.render(**payload.resume)
+
+    with open("debug_resume.html", "w", encoding="utf-8") as f:
+        f.write(html_content)
+    pdf_bytes = HTML(
+        string=html_content
+    ).write_pdf()
+
+    filename = (
+        f"{payload.resume.get('basics', {}).get('name', 'resume')}"
+        .replace(" ", "_")
+        + "_resume.pdf"
+    )
+
+    return Response(
+        content=pdf_bytes,
+        media_type="application/pdf",
+        headers={
+            "Content-Disposition": f'attachment; filename="{filename}"'
+        },
+    )
+
+
+# --------------------------------------------------
+# Reformat answer
+# --------------------------------------------------
+
+@app.post(
+    "/api/reformat-answer",
+    response_model=ReformattedText,
+)
+async def reformat_answer(payload: ReformatRequest):
+    return reformat_gap_answer(payload.answer_input)
+
+
+# --------------------------------------------------
+# Normalize answer
+# --------------------------------------------------
+
+@app.post(
+    "/api/normalize-answer",
+    response_model=PolishedBullets,
+)
+async def normalize_answer(payload: NormalizeRequest):
+    return normalize_answer_text(payload.text)
+
+
+# --------------------------------------------------
+# Polish answer
+# --------------------------------------------------
+
+@app.post(
+    "/api/polish-answer",
+    response_model=PolishedBullets,
+)
+async def polish_answer(
+    payload: Union[
+        ProjectAnswerInput,
+        ExperienceAnswerInput,
+        AchievementAnswerInput,
+    ] = Body(...),
+):
+    return polish_gap_answer(payload)
+
+
+# --------------------------------------------------
+# Analyze resume
+# --------------------------------------------------
+
+@app.post("/api/analyze")
+async def analyze_resume(
+    resume_file: Optional[UploadFile] = File(None),
+    resume_text: Optional[str] = Form(None),
+    jd_text: str = Form(...),
+):
+    text_to_parse = ""
+
+    if resume_file:
+        text_to_parse = await extract_text_from_file(resume_file)
+
+    elif resume_text and resume_text.strip():
+        text_to_parse = resume_text
+
+    else:
+        raise HTTPException(
+            status_code=400,
+            detail="Please provide a resume file or text.",
+        )
+
+    parsed_resume = parse_and_normalize_resume(
+        text_to_parse
+    )
+
+    gap_analysis = analyze_gaps(
+        parsed_resume,
+        jd_text,
+    )
+
     return {
         "status": "success",
-        "state": new_snapshot.values,
-        "next_step": new_snapshot.next
+        "parsed_resume": parsed_resume,
+        "jd_text": jd_text,
+        "ats_score": gap_analysis.ats_score,
+        "target_domain": gap_analysis.target_domain,
+        "missing_keywords": gap_analysis.missing_keywords,
+        "gap_questions": [
+            q.model_dump()
+            for q in gap_analysis.gap_questions
+        ],
     }
 
 
-@app.get("/api/stream/{thread_id}")
-async def stream_agent_updates(thread_id: str):
-    """Server-Sent Events (SSE) endpoint to stream state updates live to frontend."""
-    config = {"configurable": {"thread_id": thread_id}}
+# --------------------------------------------------
+# PDF content extraction
+# --------------------------------------------------
 
-    async def event_generator():
-        while True:
-            snapshot = app_graph.get_state(config)
-            if snapshot and snapshot.values:
-                # Send current state as SSE event payload
-                payload = {
-                    "values": snapshot.values,
-                    "next": list(snapshot.next) if snapshot.next else []
-                }
-                yield f"data: {json.dumps(payload)}\n\n"
+def extract_pdf_content(file_bytes: bytes) -> str:
+    """
+    Extract raw text and embedded hyperlinked URLs
+    from PDF bytes.
+    """
 
-            # End stream if graph execution reached the END node
-            if snapshot and not snapshot.next:
-                yield f"data: {json.dumps({'status': 'COMPLETE'})}\n\n"
-                break
-                
-            await asyncio.sleep(1)
+    extracted_pages = []
 
-    return StreamingResponse(event_generator(), media_type="text/event-stream")
+    with pdfplumber.open(io.BytesIO(file_bytes)) as pdf:
+        for page in pdf.pages:
+
+            page_text = page.extract_text() or ""
+
+            links = []
+
+            if hasattr(page, "hyperlinks") and page.hyperlinks:
+                for link in page.hyperlinks:
+                    uri = link.get("uri")
+
+                    if uri:
+                        links.append(
+                            f"[Embedded Link: {uri}]"
+                        )
+
+            if links:
+                links_str = "\n".join(links)
+
+                page_text += (
+                    "\n\n"
+                    "--- Discovered Links on Page ---\n"
+                    f"{links_str}"
+                )
+
+            extracted_pages.append(page_text)
+
+    return "\n\n".join(extracted_pages)
+
+
+# --------------------------------------------------
+# Parse test
+# --------------------------------------------------
+
+@app.post("/api/parse-test")
+async def parse_test(
+    resume_file: Optional[UploadFile] = File(None),
+    resume_text: Optional[str] = Form(None),
+):
+    text_to_parse = ""
+
+    # User pasted raw text
+    if resume_text and resume_text.strip():
+
+        text_to_parse = resume_text
+
+    # User uploaded a file
+    elif resume_file:
+
+        content_bytes = await resume_file.read()
+
+        filename = (
+            resume_file.filename.lower()
+            if resume_file.filename
+            else ""
+        )
+
+        if filename.endswith(".pdf"):
+
+            text_to_parse = extract_pdf_content(
+                content_bytes
+            )
+
+        elif filename.endswith(".txt"):
+
+            text_to_parse = content_bytes.decode(
+                "utf-8",
+                errors="ignore",
+            )
+
+        elif filename.endswith(".docx"):
+
+            # TODO: Add DOCX extraction if required.
+            raise HTTPException(
+                status_code=400,
+                detail="DOCX parsing is not implemented yet.",
+            )
+
+        else:
+
+            raise HTTPException(
+                status_code=400,
+                detail="Unsupported file format.",
+            )
+
+    else:
+
+        raise HTTPException(
+            status_code=400,
+            detail="No file or text was provided.",
+        )
+
+    normalized_data = parse_and_normalize_resume(
+        text_to_parse
+    )
+
+    return normalized_data

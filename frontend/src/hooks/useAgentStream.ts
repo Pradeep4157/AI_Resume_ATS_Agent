@@ -18,10 +18,45 @@ function nextId(prefix: string, items: { id: string }[]): string {
   return `${prefix}_${items.length + 1}`;
 }
 
+
+
 export function useAgentStream() {
   const [state, setState] = useState<AgentState | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
   const [isComplete, setIsComplete] = useState(false);
+
+  const exportPdf = async (template: string = "jake") => {
+    if (!state?.parsed_resume) return;
+
+    const resumeToExport = state.optimized_resume || state.parsed_resume;
+
+    try {
+      const res = await fetch(`${API_BASE_URL}/api/export-pdf`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ resume: resumeToExport, template }),
+      });
+
+      if (!res.ok) {
+        throw new Error("Failed to export PDF");
+      }
+
+      const blob = await res.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `${resumeToExport.basics?.name?.replace(/\s+/g, "_") || "resume"}.pdf`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      window.URL.revokeObjectURL(url);
+    } catch (err: any) {
+      console.error("PDF export failed:", err);
+      setState((prev) =>
+        prev ? { ...prev, logs: [...(prev.logs || []), `PDF export error: ${err.message}`] } : prev
+      );
+    }
+  };
 
   // Step 1: Send Resume & JD to /api/analyze
   const startAnalysis = async (resumeInput: string | File, targetJd: string) => {
@@ -213,5 +248,6 @@ export function useAgentStream() {
     startAnalysis,
     sendResponse,
     reformatAnswer,
+    exportPdf,
   };
 }

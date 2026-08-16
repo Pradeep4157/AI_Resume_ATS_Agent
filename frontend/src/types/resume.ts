@@ -84,6 +84,11 @@ export interface ExperienceAnswerInput {
   location?: string;
 }
 
+export interface ExportPdfRequest {
+  resume: ResumeData;
+  template: string;
+}
+
 export interface AchievementAnswerInput {
   category: "achievement";
   description: string;

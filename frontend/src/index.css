@@ -99,6 +99,14 @@
   #resume-print-area * {
     visibility: visible !important;
   }
+  .zoom-wrapper {
+    transform: none !important;
+  }
+  /* Undo the on-screen zoom transform so print isn't scaled down */
+  #resume-print-area,
+  #resume-print-area * {
+    transform: none !important;
+  }
 
   /* Position the resume sheet cleanly at the top-left of the PDF page */
   #resume-print-area {

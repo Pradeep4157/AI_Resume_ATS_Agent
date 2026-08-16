@@ -38,160 +38,163 @@ interface NormalizedResume {
   }>;
 }
 
+const formatLink = (link: string) => {
+  const href = link.startsWith("http") ? link : `https://${link}`;
+  const display = link.replace(/^https?:\/\/(www\.)?/, "").replace(/\/$/, "");
+  return { href, display };
+};
+
 export function JakeTemplate({ data }: { data: NormalizedResume }) {
   if (!data) return null;
 
   const { basics, skills, experience, projects, achievements, education } = data;
 
-  // Normalize links into an array even if incoming data is a string
   const linksList = Array.isArray(basics?.links)
     ? basics.links
-    : typeof basics?.links === "string"
+    : typeof basics?.links === "string" && basics.links
     ? [basics.links]
     : [];
 
+  const contactParts = [basics?.phone, basics?.email, basics?.location].filter(Boolean);
+
   return (
-    <div className="bg-white text-black font-serif p-8 rounded-lg text-[12px] leading-relaxed">
+    <div className="bg-white text-black p-[12mm] text-[10.5pt] leading-[1.4]" style={{ fontFamily: "Helvetica, Arial, sans-serif" }}>
       {/* Header */}
-      <div className="text-center border-b border-black pb-2 mb-3">
-        <h1 className="text-2xl font-bold uppercase tracking-wide font-sans">{basics?.name}</h1>
-        <div className="flex flex-wrap justify-center items-center gap-2 text-[11px] text-gray-700 mt-1">
-          {basics?.email && (
-            <a href={`mailto:${basics.email}`} className="hover:underline text-blue-800">
-              {basics.email}
-            </a>
+      <div className="text-center border-b border-black pb-[6pt] mb-[10pt]">
+        <h1 className="text-[18pt] font-bold uppercase tracking-wide m-0 mb-[4pt]">{basics?.name}</h1>
+        <div className="text-[9pt] text-[#333333]">
+          {contactParts.join("  |  ")}
+          {linksList.length > 0 && (
+            <>
+              {contactParts.length > 0 && <span>&nbsp;|&nbsp;</span>}
+              {linksList.join(", ")}
+            </>
           )}
-          {basics?.phone && <span>• {basics.phone}</span>}
-          {basics?.location && <span>• {basics.location}</span>}
-          {linksList.map((link, i) => {
-            const href = link.startsWith("http") ? link : `https://${link}`;
-            const display = link.replace(/^https?:\/\/(www\.)?/, "").replace(/\/$/, "");
-            return (
-              <React.Fragment key={i}>
-                <span>•</span>
-                <a href={href} target="_blank" rel="noreferrer" className="hover:underline text-blue-800 font-mono text-[10px]">
-                  {display}
-                </a>
-              </React.Fragment>
-            );
-          })}
         </div>
       </div>
 
       {/* Education */}
       {education?.length > 0 && (
-        <div className="mb-3 break-inside-avoid">
-          <h2 className="font-bold uppercase text-[11px] border-b border-black mb-1 font-sans">
-            Education
-          </h2>
+        <section className="mb-[9pt] break-inside-avoid">
+          <h2 className="text-[9.5pt] font-bold uppercase border-b border-black pb-[2pt] mb-[5pt]">Education</h2>
           {education.map((edu, idx) => (
-            <div key={idx} className="flex justify-between items-baseline my-0.5">
-              <div>
-                <span className="font-bold">{edu.institution}</span> — <span>{edu.degree}</span>
+            <div key={idx} className="flex justify-between items-start">
+              <div className="text-left">
+                <span className="font-bold text-[10.5pt]">{edu.institution}</span> — {edu.degree}
               </div>
-              <span className="text-[11px] font-mono">{edu.dates}</span>
+              <div className="text-right whitespace-nowrap pl-[10pt] font-mono text-[9pt] text-[#333333] w-[90pt] shrink-0">
+                {edu.dates}
+              </div>
             </div>
           ))}
-        </div>
+        </section>
       )}
 
-      {/* Technical Skills */}
+      {/* Skills */}
       {skills?.length > 0 && (
-        <div className="mb-3 break-inside-avoid">
-          <h2 className="font-bold uppercase text-[11px] border-b border-black mb-1 font-sans">
-            Technical Skills
-          </h2>
-          <p className="text-[11px]">
-            <span className="font-bold">Languages & Tools: </span>
+        <section className="mb-[9pt] break-inside-avoid">
+          <h2 className="text-[9.5pt] font-bold uppercase border-b border-black pb-[2pt] mb-[5pt]">Technical Skills</h2>
+          <p className="text-[9.5pt]">
+            <span className="font-bold">Languages &amp; Tools: </span>
             {skills.join(", ")}
           </p>
-        </div>
+        </section>
       )}
 
       {/* Experience */}
       {experience?.length > 0 && (
-        <div className="mb-3">
-          <h2 className="font-bold uppercase text-[11px] border-b border-black mb-1.5 font-sans">
-            Experience
-          </h2>
+        <section className="mb-[9pt]">
+          <h2 className="text-[9.5pt] font-bold uppercase border-b border-black pb-[2pt] mb-[5pt]">Experience</h2>
           {experience.map((exp) => (
-            <div key={exp.id || exp.role} className="mb-2 break-inside-avoid">
-              <div className="flex justify-between font-bold">
-                <span>{exp.role}</span>
-                <span className="text-[11px] font-mono font-normal">{exp.dates}</span>
+            <div key={exp.id || exp.role} className="mb-[6pt] break-inside-avoid">
+              <div className="flex justify-between items-start">
+                <div className="font-bold text-[10.5pt] text-left">{exp.role}</div>
+                <div className="text-right whitespace-nowrap pl-[10pt] font-mono text-[9pt] text-[#333333] w-[90pt] shrink-0">
+                  {exp.dates}
+                </div>
               </div>
-              <div className="flex justify-between italic text-[11px] text-gray-800 mb-0.5">
-                <span>{exp.company}</span>
-                {exp.location && <span>{exp.location}</span>}
+              <div className="flex justify-between items-start italic text-[9.5pt] text-[#333333] mb-[2pt]">
+                <div>{exp.company}</div>
+                <div>{exp.location || ""}</div>
               </div>
-              <ul className="list-disc list-outside ml-4 space-y-0.5 text-[11px] text-gray-900">
+              <ul className="list-disc list-outside ml-[14pt] mt-[2pt] space-y-[1.5pt]">
                 {exp.bullets?.map((b, i) => (
-                  <li key={i}>{b}</li>
+                  <li key={i} className="text-[9.5pt]">{b}</li>
                 ))}
               </ul>
             </div>
           ))}
-        </div>
+        </section>
       )}
 
       {/* Projects */}
       {projects?.length > 0 && (
-        <div className="mb-3">
-          <h2 className="font-bold uppercase text-[11px] border-b border-black mb-1.5 font-sans">
+        <section className="mb-[9pt]">
+          <h2 className="text-[9.5pt] font-bold uppercase border-b border-black pb-[2pt] mb-[5pt]">
             Projects
           </h2>
+
           {projects.map((proj) => {
-            const projHref = proj.link ? (proj.link.startsWith("http") ? proj.link : `https://${proj.link}`) : null;
-            const projDisplay = proj.link ? proj.link.replace(/^https?:\/\/(www\.)?/, "").replace(/\/$/, "") : null;
+            const linkInfo = proj.link ? formatLink(proj.link) : null;
 
             return (
-              <div key={proj.id || proj.name} className="mb-2 break-inside-avoid">
-                <div className="flex justify-between items-baseline">
-                  <span className="font-bold">
+              <div
+                key={proj.id || proj.name}
+                className="mb-[6pt] break-inside-avoid"
+              >
+                <div className="flex justify-between items-start">
+
+                  <div className="font-bold text-[10.5pt] text-left">
                     {proj.name}
+
                     {proj.tech_stack?.length > 0 && (
-                      <span className="font-normal italic text-[11px] text-gray-700">
-                        {" "}| {proj.tech_stack.join(", ")}
+                      <span className="font-normal italic text-[9pt]">
+                        {" | "}
+                        {proj.tech_stack.join(", ")}
                       </span>
                     )}
-                  </span>
-                  {projHref && (
+                  </div>
+
+                  {linkInfo && (
                     <a
-                      href={projHref}
+                      href={linkInfo.href}
                       target="_blank"
                       rel="noreferrer"
-                      className="text-[10px] font-mono text-blue-800 hover:underline"
+                      className="text-right whitespace-normal pl-[10pt] font-mono text-[9pt] text-[#1a4fa3] no-underline hover:underline w-[130pt] shrink-0"
                     >
-                      [{projDisplay}]
+                      [{linkInfo.display}]
                     </a>
                   )}
+
                 </div>
-                <ul className="list-disc list-outside ml-4 space-y-0.5 text-[11px] text-gray-900 mt-0.5">
+
+                <ul className="list-disc list-outside ml-[14pt] mt-[2pt] space-y-[1.5pt]">
                   {proj.bullets?.map((b, i) => (
-                    <li key={i}>{b}</li>
+                    <li key={i} className="text-[9.5pt]">
+                      {b}
+                    </li>
                   ))}
                 </ul>
               </div>
             );
           })}
-        </div>
+        </section>
       )}
 
       {/* Achievements */}
       {achievements?.length > 0 && (
-        <div className="break-inside-avoid">
-          <h2 className="font-bold uppercase text-[11px] border-b border-black mb-1 font-sans">
-            Achievements & Recognition
+        <section className="break-inside-avoid">
+          <h2 className="text-[9.5pt] font-bold uppercase border-b border-black pb-[2pt] mb-[5pt]">
+            Achievements &amp; Recognition
           </h2>
-          <ul className="list-disc list-outside ml-4 space-y-0.5 text-[11px] text-gray-900">
+          <ul className="list-disc list-outside ml-[14pt] space-y-[1.5pt]">
             {achievements.map((ach) => (
-              <li key={ach.id || ach.title}>
-                <span className="font-bold">{ach.title}</span> ({ach.category}):{" "}
-                {ach.details?.join(" • ")}
+              <li key={ach.id || ach.title} className="text-[9.5pt]">
+                <span className="font-bold">{ach.title}</span>: {ach.details?.join(" • ")}
               </li>
             ))}
           </ul>
-        </div>
+        </section>
       )}
     </div>
   );

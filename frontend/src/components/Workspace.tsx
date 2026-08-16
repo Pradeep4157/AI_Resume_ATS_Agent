@@ -14,7 +14,9 @@ interface WorkspaceProps {
     answerInput: GapAnswerInput | null
   ) => Promise<void>;
   reformatAnswer?: (answerInput: GapAnswerInput) => Promise<string>;
+  exportPdf?: (template?: string) => Promise<void>;
 }
+
 /* Inside Workspace.tsx */
 
 export const Workspace: React.FC<WorkspaceProps> = ({
@@ -23,6 +25,7 @@ export const Workspace: React.FC<WorkspaceProps> = ({
   isComplete,
   sendResponse,
   reformatAnswer,
+  exportPdf,
 }) => {
   const [selectedTemplate, setSelectedTemplate] = useState<string>("jake");
   const resumeData = state?.optimized_resume || state?.parsed_resume;
@@ -117,9 +120,10 @@ export const Workspace: React.FC<WorkspaceProps> = ({
         <div className="lg:col-span-7 bg-[#0F0F10] flex flex-col h-full overflow-hidden p-4">
           {resumeData ? (
             <ResumePreview 
-              resumeData={resumeData} 
-              isComplete={isComplete} 
-              selectedTemplate={selectedTemplate} 
+              resumeData={resumeData}
+              isComplete={isComplete}
+              selectedTemplate={selectedTemplate}
+              onExportPdf={() => exportPdf?.(selectedTemplate)}
             />
           ) : isProcessing ? (
             <div className="flex flex-col items-center justify-center h-full my-auto text-center p-8">

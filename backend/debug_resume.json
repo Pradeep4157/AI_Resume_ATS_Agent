@@ -1,0 +1,173 @@
+{
+  "basics": {
+    "name": "PRADEEP KUMAR JHA",
+    "email": "krp18539@gmail.com",
+    "phone": "9110865964",
+    "location": null,
+    "links": "https://www.linkedin.com/in/pradeep-kumar-jha-91b529268/, https://github.com/Pradeep4157"
+  },
+  "skills": [
+    "C++",
+    "Python",
+    "Java",
+    "JavaScript",
+    "SQL",
+    "HTML/CSS",
+    "React.js",
+    "Node.js",
+    "Express.js",
+    "Vite",
+    "Tailwind CSS",
+    "Google Gemini API",
+    "LangChain",
+    "LangGraph",
+    "YOLOv8",
+    "OpenCV",
+    "PyTorch",
+    "MongoDB",
+    "Mongoose",
+    "Git",
+    "GitHub",
+    "Docker",
+    "Kubernetes",
+    "VS Code",
+    "Postman",
+    "AWS",
+    "Vercel",
+    "Render"
+  ],
+  "experience": [
+    {
+      "id": "exp_1",
+      "company": "cdcvdf fewafawef",
+      "role": "efawfeaw fewafaew",
+      "dates": "unknown",
+      "location": null,
+      "bullets": [
+        "fewafawefaw",
+        "feawfaw feawfaw",
+        "feawfaw feawfeaw",
+        "feawfawefawef"
+      ]
+    }
+  ],
+  "projects": [
+    {
+      "id": "proj_1",
+      "name": "AI Course Generator",
+      "tech_stack": [
+        "React.js",
+        "Node.js",
+        "Express.js",
+        "MongoDB",
+        "Mongoose",
+        "Vite",
+        "Tailwind CSS",
+        "Google Gemini API",
+        "YouTube Data API",
+        "jsPDF"
+      ],
+      "link": "https://ai-course-generator-fawn.vercel.app/",
+      "bullets": [
+        "Built a full-stack web application where users enter any topic and Google Gemini automatically generates a complete online course with 3–6 modules and individual lessons.",
+        "Developed a dynamic lesson viewer supporting rich content including text, coding sections, interactive quizzes, and video suggestions.",
+        "Integrated the YouTube Data API to automatically find and embed relevant educational videos for each generated lesson.",
+        "Implemented a PDF export feature using html2canvas and jsPDF, allowing users to save generated lessons and quizzes for offline study.",
+        "Built authentication and persistent course storage using MongoDB and Mongoose, allowing users to securely save and access their generated courses."
+      ]
+    },
+    {
+      "id": "proj_2",
+      "name": "Interactive Whiteboard Application",
+      "tech_stack": [
+        "HTML5 Canvas",
+        "React Context API",
+        "useReducer",
+        "Rough.js",
+        "Perfect-Freehand"
+      ],
+      "link": "https://white-board-proj.vercel.app/",
+      "bullets": [
+        "Developed and deployed an interactive whiteboard application on Vercel, enabling browser-based sketching, annotations, and freehand illustrations using HTML5 Canvas.",
+        "Implemented 7+ drawing tools including brush, line, rectangle, circle, arrow, text, and eraser using custom mouse-event handling.",
+        "Engineered centralized state management using React Context API and useReducer, supporting real-time canvas updates and history-based undo/redo with keyboard shortcuts.",
+        "Integrated Rough.js and Perfect-Freehand for hand-drawn shapes and smooth freehand strokes, with customizable colors, fills, brush sizes, and text formatting."
+      ]
+    },
+    {
+      "id": "proj_3",
+      "name": "Tic-Tac-Toe AI with Minimax and Alpha-Beta Pruning",
+      "tech_stack": [
+        "C++",
+        "Minimax",
+        "Alpha-Beta Pruning",
+        "Bit Manipulation",
+        "Object-Oriented Programming",
+        "Heuristic Evaluation"
+      ],
+      "link": "",
+      "bullets": [
+        "Built a C++ Tic-Tac-Toe AI using the Minimax algorithm with Alpha-Beta pruning to optimize move selection and reduce unnecessary game-state evaluations.",
+        "Designed an efficient game-state evaluation function and implemented move ordering, iterative deepening, and transposition tables to improve search performance.",
+        "Optimized board representation using bitwise operations, reducing memory requirements while maintaining fast game-state evaluation.",
+        "Developed a modular console-based interface and conducted performance benchmarking across 10,000+ simulated games to validate AI correctness and efficiency."
+      ]
+    },
+    {
+      "id": "proj_4",
+      "name": "feawfew",
+      "tech_stack": [
+        "fewafawe"
+      ],
+      "link": "https://fewafaew",
+      "bullets": [
+        "fewafeaw"
+      ]
+    }
+  ],
+  "achievements": [
+    {
+      "id": "ach_1",
+      "title": "800+ Problems Solved and 2059 (Knight) on LeetCode",
+      "category": "Contest",
+      "dates": null,
+      "details": [
+        "Solved 800+ problems and achieved Knight rating (2059) on LeetCode."
+      ]
+    },
+    {
+      "id": "ach_2",
+      "title": "500+ Problems Solved and Specialist (1458) on Codeforces",
+      "category": "Contest",
+      "dates": null,
+      "details": [
+        "Solved 500+ problems and achieved Specialist rating (1458) on Codeforces."
+      ]
+    },
+    {
+      "id": "ach_3",
+      "title": "All India Rank 5 in ICPC Practice Contest",
+      "category": "Contest",
+      "dates": null,
+      "details": [
+        "Secured All India Rank 5 in ICPC Practice Contest among 529 teams."
+      ]
+    },
+    {
+      "id": "ach_4",
+      "title": "Ranked 625 in LeetCode Weekly Contest 462",
+      "category": "Contest",
+      "dates": null,
+      "details": [
+        "Ranked 625 out of all participants in LeetCode Weekly Contest 462."
+      ]
+    }
+  ],
+  "education": [
+    {
+      "degree": "Bachelor of Technology in Computer Science and Engineering",
+      "institution": "PES UNIVERSITY Electronic City",
+      "dates": "Aug. 2021 – May 2025"
+    }
+  ]
+}

@@ -1,0 +1,44 @@
+@media print {
+  /* Hide everything by default */
+  body * {
+    visibility: hidden;
+  }
+
+  /* Reveal only the print target and its children */
+  #resume-print-area,
+  #resume-print-area * {
+    visibility: visible;
+  }
+
+  /* Pin the resume to the page origin, full width */
+  #resume-print-area {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 210mm;
+    min-height: 297mm;
+    margin: 0;
+    padding: 12mm;
+    box-shadow: none !important;
+    transform: none !important; /* undo any zoom scale() transform */
+  }
+  
+  @page {
+    size: A4 portrait;
+    margin: 0;
+  }
+
+  /* Prevent awkward mid-block page splits */
+  #resume-print-area section,
+  #resume-print-area .resume-entry {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+
+  /* Avoid a heading being stranded at the bottom of a page with its content on the next */
+  #resume-print-area h1,
+  #resume-print-area h2 {
+    break-after: avoid;
+    page-break-after: avoid;
+  }
+}
