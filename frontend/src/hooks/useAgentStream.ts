@@ -11,7 +11,7 @@ import type {
   PolishedBullets,
 } from "../types/resume";
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+const API_BASE_URL = "https://ai-resume-ats-agent-nqo1.onrender.com";
 const STORAGE_KEY = "resumax_agent_state";
 
 function loadPersistedState(): AgentState | null {
