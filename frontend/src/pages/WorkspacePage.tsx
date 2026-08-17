@@ -9,7 +9,7 @@ interface WorkspacePageProps {
 
 export const WorkspacePage: React.FC<WorkspacePageProps> = ({ agentStream }) => {
   const navigate = useNavigate();
-  const { state, isProcessing, isComplete, sendResponse, reformatAnswer, exportPdf, resetSession } = agentStream;
+  const { state, isProcessing, isComplete, sendResponse, reformatAnswer, exportPdf } = agentStream;
 
   // If someone lands on /workspace directly with no data at all (fresh browser, never analyzed anything),
   // send them back to start rather than showing an empty workspace.

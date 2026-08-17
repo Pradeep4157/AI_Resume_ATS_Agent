@@ -1,4 +1,4 @@
-import { Routes, Route, useNavigate } from "react-router-dom";
+import { Routes, Route} from "react-router-dom";
 import { useAgentStream } from "./hooks/useAgentStream";
 import { LandingPage } from "./pages/LandingPage";
 import { WorkspacePage } from "./pages/WorkspacePage";

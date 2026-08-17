@@ -7,7 +7,6 @@ import {
   Sparkles,
   Upload,
   X,
-  Zap,
 } from "lucide-react";
 
 interface LandingPageProps {

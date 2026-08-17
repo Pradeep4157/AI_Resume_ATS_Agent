@@ -27,7 +27,7 @@ export const Workspace: React.FC<WorkspaceProps> = ({
   isComplete,
   sendResponse,
   reformatAnswer,
-  exportPdf,
+  
 }) => {
   const [selectedTemplate, setSelectedTemplate] = useState<string>("jake");
   const resumeData = state?.optimized_resume || state?.parsed_resume;
