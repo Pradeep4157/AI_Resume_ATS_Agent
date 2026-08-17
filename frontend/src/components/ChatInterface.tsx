@@ -1,7 +1,19 @@
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Bot, Send, Sparkles, CheckCircle2, ShieldCheck, Terminal, Wand2 } from "lucide-react";
-import type { AgentState, GapPlacement, GapAnswerInput } from "../types/resume";
+import {
+  Bot,
+  Send,
+  Sparkles,
+  CheckCircle2,
+  ShieldCheck,
+  Terminal,
+  Wand2,
+} from "lucide-react";
+import type {
+  AgentState,
+  GapPlacement,
+  GapAnswerInput,
+} from "../types/resume";
 
 interface ChatInterfaceProps {
   state: AgentState | null;
@@ -70,8 +82,14 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({
 
   const isFormValid = (): boolean => {
     if (!placement || placement === "none") return true;
-    if (placement === "project") return !!projectName.trim() && !!projectDescription.trim();
-    if (placement === "experience") return !!expRole.trim() && !!expCompany.trim() && !!expDescription.trim();
+    if (placement === "project")
+      return !!projectName.trim() && !!projectDescription.trim();
+    if (placement === "experience")
+      return (
+        !!expRole.trim() &&
+        !!expCompany.trim() &&
+        !!expDescription.trim()
+      );
     if (placement === "achievement") return !!achievementDescription.trim();
     return false;
   };
@@ -122,7 +140,8 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({
       const polished = await onReformat(answerInput);
       if (placement === "project") setProjectDescription(polished);
       else if (placement === "experience") setExpDescription(polished);
-      else if (placement === "achievement") setAchievementDescription(polished);
+      else if (placement === "achievement")
+        setAchievementDescription(polished);
     } catch (err) {
       console.error("Reformat failed:", err);
     } finally {
@@ -154,46 +173,61 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({
   };
 
   const currentDescription =
-    placement === "project" ? projectDescription :
-    placement === "experience" ? expDescription :
-    placement === "achievement" ? achievementDescription : "";
+    placement === "project"
+      ? projectDescription
+      : placement === "experience"
+      ? expDescription
+      : placement === "achievement"
+      ? achievementDescription
+      : "";
 
   return (
     <div className="flex flex-col h-full bg-[#1C1C1E] rounded-xl p-4 flex-1 overflow-hidden font-sans">
+
       {/* Header */}
       <div className="flex items-center justify-between pb-3.5 border-b border-white/10">
         <div className="flex items-center gap-2.5">
-          <div className="w-8 h-8 rounded-lg bg-[#2C2C2E] border border-white/10 flex items-center justify-center text-[#0A84FF]">
-            <Bot size={17} />
+          <div className="w-9 h-9 rounded-lg bg-[#2C2C2E] border border-white/10 flex items-center justify-center text-[#0A84FF]">
+            <Bot size={18} />
           </div>
+
           <div>
-            <h3 className="text-xs font-semibold text-[#F5F5F7]">Agent Inspector</h3>
-            <p className="text-[11px] text-[#86868B]">
-              {state?.target_domain ? `Specialist: ${state.target_domain}` : "Initializing workflow..."}
+            <h3 className="text-sm font-semibold text-[#F5F5F7]">
+              Agent Inspector
+            </h3>
+
+            <p className="text-xs text-[#86868B]">
+              {state?.target_domain
+                ? `Specialist: ${state.target_domain}`
+                : "Initializing workflow..."}
             </p>
           </div>
         </div>
 
         {state?.ats_score !== undefined && (
-          <div className="flex items-center gap-1.5 bg-[#0A84FF]/15 border border-[#0A84FF]/30 px-2.5 py-1 rounded-full">
-            <ShieldCheck size={13} className="text-[#0A84FF]" />
-            <span className="text-xs font-medium text-[#0A84FF]">ATS Match: {state.ats_score}%</span>
+          <div className="flex items-center gap-1.5 bg-[#0A84FF]/15 border border-[#0A84FF]/30 px-2.5 py-1.5 rounded-full">
+            <ShieldCheck size={14} className="text-[#0A84FF]" />
+            <span className="text-sm font-medium text-[#0A84FF]">
+              ATS Match: {state.ats_score}%
+            </span>
           </div>
         )}
       </div>
 
       {/* Main Stream Area */}
       <div className="flex-1 overflow-y-auto space-y-4 py-4 pr-1">
+
         {state?.missing_keywords && state.missing_keywords.length > 0 && (
           <div className="p-3.5 rounded-xl bg-[#2C2C2E] border border-white/10">
-            <span className="text-[10px] font-semibold text-[#86868B] uppercase tracking-wider block mb-2">
+            <span className="text-xs font-semibold text-[#86868B] uppercase tracking-wider block mb-2">
               Detected Gap Keywords
             </span>
+
             <div className="flex flex-wrap gap-1.5">
               {state.missing_keywords.map((kw, i) => (
                 <span
                   key={i}
-                  className="px-2.5 py-0.5 text-xs font-medium rounded-full bg-[#1C1C1E] border border-white/10 text-[#F5F5F7]"
+                  className="px-2.5 py-1 text-sm font-medium rounded-full bg-[#1C1C1E] border border-white/10 text-[#F5F5F7]"
                 >
                   {kw}
                 </span>
@@ -213,15 +247,19 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({
               transition={{ duration: 0.3 }}
               className="p-4 rounded-xl bg-[#0A84FF]/10 border border-[#0A84FF]/25 text-[#F5F5F7] space-y-3"
             >
-              <div className="flex items-center gap-1.5 text-xs font-medium text-[#0A84FF]">
-                <Sparkles size={13} />
-                <span>Question {currIndex + 1} of {questions.length}</span>
+              <div className="flex items-center gap-1.5 text-sm font-medium text-[#0A84FF]">
+                <Sparkles size={14} />
+                <span>
+                  Question {currIndex + 1} of {questions.length}
+                </span>
               </div>
+
               <div>
-                <p className="text-xs font-semibold leading-relaxed text-[#F5F5F7]">
+                <p className="text-sm font-semibold leading-relaxed text-[#F5F5F7]">
                   Missing: {currentQuestion.missing_requirement}
                 </p>
-                <p className="text-[11px] leading-relaxed text-[#A1A1A6] mt-1">
+
+                <p className="text-xs leading-relaxed text-[#A1A1A6] mt-1">
                   {currentQuestion.explanation}
                 </p>
               </div>
@@ -234,7 +272,7 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({
                     type="button"
                     onClick={() => setPlacement(opt.value)}
                     disabled={isProcessing}
-                    className={`px-2.5 py-1.5 text-[11px] font-medium rounded-lg border transition-all disabled:opacity-50 cursor-pointer ${
+                    className={`px-3 py-2 text-sm font-medium rounded-lg border transition-all disabled:opacity-50 cursor-pointer ${
                       placement === opt.value
                         ? "bg-[#0A84FF] border-[#0A84FF] text-white"
                         : "bg-[#1C1C1E] border-white/10 text-[#A1A1A6] hover:text-white hover:border-white/20"
@@ -253,21 +291,23 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({
                     value={projectName}
                     onChange={(e) => setProjectName(e.target.value)}
                     placeholder="Project name"
-                    className="w-full bg-[#1C1C1E] border border-white/10 focus:border-[#0A84FF] text-xs text-[#F5F5F7] placeholder-[#86868B] rounded-lg px-3 py-2 outline-none"
+                    className="w-full bg-[#1C1C1E] border border-white/10 focus:border-[#0A84FF] text-sm text-[#F5F5F7] placeholder-[#86868B] rounded-lg px-3 py-2.5 outline-none"
                   />
+
                   <input
                     type="text"
                     value={projectTechStack}
                     onChange={(e) => setProjectTechStack(e.target.value)}
                     placeholder="Tech stack (comma separated, optional)"
-                    className="w-full bg-[#1C1C1E] border border-white/10 focus:border-[#0A84FF] text-xs text-[#F5F5F7] placeholder-[#86868B] rounded-lg px-3 py-2 outline-none"
+                    className="w-full bg-[#1C1C1E] border border-white/10 focus:border-[#0A84FF] text-sm text-[#F5F5F7] placeholder-[#86868B] rounded-lg px-3 py-2.5 outline-none"
                   />
+
                   <input
                     type="text"
                     value={projectLink}
                     onChange={(e) => setProjectLink(e.target.value)}
                     placeholder="Live link / GitHub repo (optional)"
-                    className="w-full bg-[#1C1C1E] border border-white/10 focus:border-[#0A84FF] text-xs text-[#F5F5F7] placeholder-[#86868B] rounded-lg px-3 py-2 outline-none"
+                    className="w-full bg-[#1C1C1E] border border-white/10 focus:border-[#0A84FF] text-sm text-[#F5F5F7] placeholder-[#86868B] rounded-lg px-3 py-2.5 outline-none"
                   />
                 </div>
               )}
@@ -281,30 +321,33 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({
                       value={expRole}
                       onChange={(e) => setExpRole(e.target.value)}
                       placeholder="Position / role"
-                      className="w-full bg-[#1C1C1E] border border-white/10 focus:border-[#0A84FF] text-xs text-[#F5F5F7] placeholder-[#86868B] rounded-lg px-3 py-2 outline-none"
+                      className="w-full bg-[#1C1C1E] border border-white/10 focus:border-[#0A84FF] text-sm text-[#F5F5F7] placeholder-[#86868B] rounded-lg px-3 py-2.5 outline-none"
                     />
+
                     <input
                       type="text"
                       value={expCompany}
                       onChange={(e) => setExpCompany(e.target.value)}
                       placeholder="Company"
-                      className="w-full bg-[#1C1C1E] border border-white/10 focus:border-[#0A84FF] text-xs text-[#F5F5F7] placeholder-[#86868B] rounded-lg px-3 py-2 outline-none"
+                      className="w-full bg-[#1C1C1E] border border-white/10 focus:border-[#0A84FF] text-sm text-[#F5F5F7] placeholder-[#86868B] rounded-lg px-3 py-2.5 outline-none"
                     />
                   </div>
+
                   <div className="grid grid-cols-2 gap-2">
                     <input
                       type="text"
                       value={expDates}
                       onChange={(e) => setExpDates(e.target.value)}
                       placeholder="Dates (e.g. Jun 2024 – Present)"
-                      className="w-full bg-[#1C1C1E] border border-white/10 focus:border-[#0A84FF] text-xs text-[#F5F5F7] placeholder-[#86868B] rounded-lg px-3 py-2 outline-none"
+                      className="w-full bg-[#1C1C1E] border border-white/10 focus:border-[#0A84FF] text-sm text-[#F5F5F7] placeholder-[#86868B] rounded-lg px-3 py-2.5 outline-none"
                     />
+
                     <input
                       type="text"
                       value={expLocation}
                       onChange={(e) => setExpLocation(e.target.value)}
                       placeholder="Location (optional)"
-                      className="w-full bg-[#1C1C1E] border border-white/10 focus:border-[#0A84FF] text-xs text-[#F5F5F7] placeholder-[#86868B] rounded-lg px-3 py-2 outline-none"
+                      className="w-full bg-[#1C1C1E] border border-white/10 focus:border-[#0A84FF] text-sm text-[#F5F5F7] placeholder-[#86868B] rounded-lg px-3 py-2.5 outline-none"
                     />
                   </div>
                 </div>
@@ -318,27 +361,31 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({
                     value={achievementCategory}
                     onChange={(e) => setAchievementCategory(e.target.value)}
                     placeholder="Category (e.g. Hackathon, Award)"
-                    className="w-full bg-[#1C1C1E] border border-white/10 focus:border-[#0A84FF] text-xs text-[#F5F5F7] placeholder-[#86868B] rounded-lg px-3 py-2 outline-none"
+                    className="w-full bg-[#1C1C1E] border border-white/10 focus:border-[#0A84FF] text-sm text-[#F5F5F7] placeholder-[#86868B] rounded-lg px-3 py-2.5 outline-none"
                   />
+
                   <input
                     type="text"
                     value={achievementDates}
                     onChange={(e) => setAchievementDates(e.target.value)}
                     placeholder="Date (optional)"
-                    className="w-full bg-[#1C1C1E] border border-white/10 focus:border-[#0A84FF] text-xs text-[#F5F5F7] placeholder-[#86868B] rounded-lg px-3 py-2 outline-none"
+                    className="w-full bg-[#1C1C1E] border border-white/10 focus:border-[#0A84FF] text-sm text-[#F5F5F7] placeholder-[#86868B] rounded-lg px-3 py-2.5 outline-none"
                   />
                 </div>
               )}
 
-              {/* Shared description textarea — Reformat writes back into this */}
+              {/* Shared description textarea */}
               {placement && placement !== "none" && (
                 <div className="space-y-1.5 pt-1">
                   <textarea
                     value={currentDescription}
                     onChange={(e) => {
-                      if (placement === "project") setProjectDescription(e.target.value);
-                      else if (placement === "experience") setExpDescription(e.target.value);
-                      else if (placement === "achievement") setAchievementDescription(e.target.value);
+                      if (placement === "project")
+                        setProjectDescription(e.target.value);
+                      else if (placement === "experience")
+                        setExpDescription(e.target.value);
+                      else if (placement === "achievement")
+                        setAchievementDescription(e.target.value);
                     }}
                     placeholder={
                       placement === "achievement"
@@ -347,21 +394,30 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({
                     }
                     rows={4}
                     disabled={isReformatting}
-                    className="w-full bg-[#1C1C1E] border border-white/10 focus:border-[#0A84FF] text-xs text-[#F5F5F7] placeholder-[#86868B] rounded-lg px-3 py-2 outline-none resize-none disabled:opacity-60"
+                    className="w-full bg-[#1C1C1E] border border-white/10 focus:border-[#0A84FF] text-sm text-[#F5F5F7] placeholder-[#86868B] rounded-lg px-3 py-2.5 outline-none resize-none disabled:opacity-60"
                   />
 
                   <button
                     type="button"
                     onClick={handleReformat}
-                    disabled={!currentDescription.trim() || isReformatting || isProcessing}
-                    className="flex items-center gap-1.5 px-2.5 py-1.5 text-[11px] font-medium rounded-lg border bg-[#1C1C1E] border-white/10 text-[#0A84FF] hover:border-[#0A84FF]/40 transition-all disabled:opacity-40 cursor-pointer"
+                    disabled={
+                      !currentDescription.trim() ||
+                      isReformatting ||
+                      isProcessing
+                    }
+                    className="flex items-center gap-1.5 px-3 py-2 text-sm font-medium rounded-lg border bg-[#1C1C1E] border-white/10 text-[#0A84FF] hover:border-[#0A84FF]/40 transition-all disabled:opacity-40 cursor-pointer"
                   >
                     {isReformatting ? (
-                      <div className="w-3 h-3 border-2 border-[#0A84FF] border-t-transparent rounded-full animate-spin" />
+                      <div className="w-3.5 h-3.5 border-2 border-[#0A84FF] border-t-transparent rounded-full animate-spin" />
                     ) : (
-                      <Wand2 size={12} />
+                      <Wand2 size={14} />
                     )}
-                    <span>{isReformatting ? "Reformatting..." : "Reformat using AI"}</span>
+
+                    <span>
+                      {isReformatting
+                        ? "Reformatting..."
+                        : "Reformat using AI"}
+                    </span>
                   </button>
                 </div>
               )}
@@ -372,13 +428,13 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({
                   <button
                     type="submit"
                     disabled={!isFormValid() || isProcessing || isReformatting}
-                    className="w-full flex items-center justify-center gap-1.5 py-2 rounded-lg bg-[#0A84FF] hover:bg-[#0071E3] text-white text-xs font-semibold transition-all disabled:opacity-40 cursor-pointer"
+                    className="w-full flex items-center justify-center gap-1.5 py-2.5 rounded-lg bg-[#0A84FF] hover:bg-[#0071E3] text-white text-sm font-semibold transition-all disabled:opacity-40 cursor-pointer"
                   >
                     {isProcessing ? (
                       <div className="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin" />
                     ) : (
                       <>
-                        <Send size={12} />
+                        <Send size={14} />
                         <span>Submit Answer</span>
                       </>
                     )}
@@ -391,7 +447,7 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({
                   type="button"
                   onClick={handleSubmit}
                   disabled={isProcessing}
-                  className="w-full py-2 rounded-lg bg-[#2C2C2E] hover:bg-[#3A3A3C] text-[#F5F5F7] text-xs font-semibold transition-all disabled:opacity-40 cursor-pointer"
+                  className="w-full py-2.5 rounded-lg bg-[#2C2C2E] hover:bg-[#3A3A3C] text-[#F5F5F7] text-sm font-semibold transition-all disabled:opacity-40 cursor-pointer"
                 >
                   Confirm & Skip
                 </button>
@@ -399,20 +455,30 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({
             </motion.div>
           ) : (
             <div className="p-6 text-center border border-dashed border-white/10 rounded-xl bg-[#2C2C2E]/40">
-              <CheckCircle2 size={22} className="mx-auto text-[#30D158] mb-1.5" />
-              <p className="text-xs font-medium text-[#F5F5F7]">All gaps resolved</p>
-              <p className="text-[11px] text-[#86868B] mt-0.5">Your resume has been updated with your answers.</p>
+              <CheckCircle2
+                size={24}
+                className="mx-auto text-[#30D158] mb-1.5"
+              />
+
+              <p className="text-sm font-medium text-[#F5F5F7]">
+                All gaps resolved
+              </p>
+
+              <p className="text-xs text-[#86868B] mt-0.5">
+                Your resume has been updated with your answers.
+              </p>
             </div>
           )}
         </AnimatePresence>
 
         {/* System Event Log */}
         <div className="pt-3 border-t border-white/10">
-          <div className="flex items-center gap-1.5 text-[11px] font-semibold text-[#86868B] mb-2">
-            <Terminal size={12} />
+          <div className="flex items-center gap-1.5 text-xs font-semibold text-[#86868B] mb-2">
+            <Terminal size={13} />
             <span>Agent Event Log</span>
           </div>
-          <div className="space-y-1 font-mono text-[11px] text-[#A1A1A6]">
+
+          <div className="space-y-1 font-mono text-xs text-[#A1A1A6]">
             {state?.logs?.slice(-3).map((log, i) => (
               <div key={i} className="flex items-start gap-1.5">
                 <span className="text-[#0A84FF]">›</span>
@@ -423,13 +489,13 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({
         </div>
       </div>
 
-      {/* Quick skip, always available while a question is active */}
+      {/* Quick skip */}
       {currentQuestion && (
         <button
           type="button"
           onClick={handleSkip}
           disabled={isProcessing}
-          className="mt-2 self-end px-2.5 py-1 text-[10px] font-medium text-[#86868B] hover:text-white bg-[#1C1C1E] border border-white/10 rounded-md disabled:opacity-50 cursor-pointer"
+          className="mt-2 self-end px-3 py-1.5 text-xs font-medium text-[#86868B] hover:text-white bg-[#1C1C1E] border border-white/10 rounded-md disabled:opacity-50 cursor-pointer"
         >
           Skip this question
         </button>

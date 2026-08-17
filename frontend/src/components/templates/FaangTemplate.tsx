@@ -122,7 +122,7 @@ export function FaangTemplate({ data }: { data: NormalizedResume }) {
                 <span>{exp.company}</span>
                 <span className="text-[10.5px] font-mono font-normal text-gray-700">{exp.dates}</span>
               </div>
-              <div className="flex justify-between items-baseline italic text-[11px] text-gray-800 mb-0.5">
+              <div className="flex justify-between items-baseline  text-[11px] text-gray-800 mb-0.5">
                 <span>{exp.role}</span>
                 {exp.location && <span>{exp.location}</span>}
               </div>
@@ -152,7 +152,7 @@ export function FaangTemplate({ data }: { data: NormalizedResume }) {
                   <span className="font-bold">
                     {proj.name}
                     {proj.tech_stack?.length > 0 && (
-                      <span className="font-normal italic text-[10.5px] text-gray-700">
+                      <span className="font-normal  text-[10.5px] text-gray-700">
                         {" "}| {proj.tech_stack.join(", ")}
                       </span>
                     )}

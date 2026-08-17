@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<style>
+  @page {
+    size: A4;
+    margin: 10mm;
+  }
+
+  * {
+    box-sizing: border-box;
+  }
+
+  body {
+    font-family: "Helvetica", "Arial", sans-serif;
+    font-size: 9pt;
+    line-height: 1.25;
+    color: #111111;
+    margin: 0;
+    padding: 0;
+  }
+
+  .header {
+    border-bottom: 2px solid #111111;
+    padding-bottom: 4pt;
+    margin-bottom: 6pt;
+  }
+
+  .header h1 {
+    font-size: 15pt;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+    margin: 0 0 2pt 0;
+  }
+
+  .contact-line {
+    font-size: 8pt;
+    color: #444444;
+  }
+
+  .contact-line a {
+    color: #1a4fa3;
+    text-decoration: none;
+  }
+
+  section {
+    margin-bottom: 5pt;
+  }
+
+  h2.section-title {
+    font-size: 8pt;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    border-bottom: 1px solid #cccccc;
+    padding-bottom: 1.5pt;
+    margin: 0 0 3pt 0;
+  }
+
+  .row {
+    display: table;
+    width: 100%;
+  }
+  .row .left {
+    display: table-cell;
+    text-align: left;
+    vertical-align: top;
+  }
+  .row .right {
+    display: table-cell;
+    text-align: right;
+    vertical-align: top;
+    white-space: nowrap;
+    padding-left: 8pt;
+  }
+  .row .right.dates {
+    width: 75pt;
+  }
+  .row .right.link {
+    width: 110pt;
+    white-space: normal;
+  }
+
+  .entry {
+    margin-bottom: 3pt;
+  }
+
+  .entry-title {
+    font-weight: 700;
+    font-size: 9pt;
+  }
+
+  .dates, .link {
+    font-family: "Courier New", monospace;
+    font-size: 7.5pt;
+    color: #555555;
+  }
+
+  .link a {
+    color: #1a4fa3;
+    text-decoration: none;
+  }
+
+  ul.bullets {
+    margin: 1pt 0 0 0;
+    padding-left: 11pt;
+  }
+
+  ul.bullets li {
+    font-size: 8pt;
+    margin-bottom: 0.5pt;
+    break-inside: avoid;
+  }
+
+  .skills-text {
+    font-size: 8pt;
+  }
+</style>
+</head>
+<body>
+
+  <div class="header">
+    <h1>{{ basics.name }}</h1>
+    <div class="contact-line">
+      {%- set contact_parts = [] -%}
+      {%- if basics.email %}{{ contact_parts.append(basics.email) or "" }}{% endif -%}
+      {%- if basics.phone %}{{ contact_parts.append(basics.phone) or "" }}{% endif -%}
+      {%- if basics.location %}{{ contact_parts.append(basics.location) or "" }}{% endif -%}
+      {{ contact_parts | join(" | ") }}
+      {%- if basics.links %} | {{ basics.links }}{% endif -%}
+    </div>
+  </div>
+
+  {% if skills %}
+  <section>
+    <h2 class="section-title">Technical Skills</h2>
+    <p class="skills-text">{{ skills | join(" • ") }}</p>
+  </section>
+  {% endif %}
+
+  {% if experience %}
+  <section>
+    <h2 class="section-title">Experience</h2>
+    {% for exp in experience %}
+    <div class="entry">
+      <div class="row">
+        <div class="left entry-title">{{ exp.role }} @ {{ exp.company }}</div>
+        <div class="right dates">{{ exp.dates }}</div>
+      </div>
+      <ul class="bullets">
+        {% for b in exp.bullets %}<li>{{ b }}</li>{% endfor %}
+      </ul>
+    </div>
+    {% endfor %}
+  </section>
+  {% endif %}
+
+  {% if projects %}
+  <section>
+    <h2 class="section-title">Projects</h2>
+    {% for proj in projects %}
+    <div class="entry">
+      <div class="row">
+        <div class="left entry-title">
+          {{ proj.name }}
+          {% if proj.tech_stack %}<span style="font-weight:normal; font-size:7.5pt; color:#555555;"> ({{ proj.tech_stack | join(", ") }})</span>{% endif %}
+        </div>
+        <div class="right link">
+          {% if proj.link %}<a href="{{ proj.link }}">{{ proj.link | replace("https://", "") | replace("http://", "") }}</a>{% endif %}
+        </div>
+      </div>
+      <ul class="bullets">
+        {% for b in proj.bullets %}<li>{{ b }}</li>{% endfor %}
+      </ul>
+    </div>
+    {% endfor %}
+  </section>
+  {% endif %}
+
+  {% if education %}
+  <section>
+    <h2 class="section-title">Education</h2>
+    {% for edu in education %}
+    <div class="row">
+      <div class="left"><span class="entry-title">{{ edu.institution }}</span> — {{ edu.degree }}</div>
+      <div class="right dates">{{ edu.dates }}</div>
+    </div>
+    {% endfor %}
+  </section>
+  {% endif %}
+
+  {% if achievements %}
+  <section>
+    <h2 class="section-title">Achievements</h2>
+    <ul class="bullets">
+      {% for ach in achievements %}
+      <li><span style="font-weight:700;">{{ ach.title }}</span>: {{ ach.details | join(" • ") }}</li>
+      {% endfor %}
+    </ul>
+  </section>
+  {% endif %}
+
+</body>
+</html>

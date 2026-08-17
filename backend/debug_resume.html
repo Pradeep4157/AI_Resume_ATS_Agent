@@ -3,266 +3,270 @@
 <head>
 <meta charset="utf-8">
 <style>
-  @page {
-    size: A4;
-    margin: 12mm;
-  }
+  @page { size: A4; margin: 12mm; }
 
-  * {
-    box-sizing: border-box;
-  }
+  * { box-sizing: border-box; }
 
   body {
-    font-family: "Helvetica", "Arial", sans-serif;
-    font-size: 10.5pt;
-    line-height: 1.4;
-    color: #000000;
     margin: 0;
     padding: 0;
+    background: #fff;
+    color: #000;
+    font-family: Helvetica, Arial, sans-serif;
+    font-size: 11.5pt;
+    line-height: 1.35;
   }
+
+  a { color: #1e40af; text-decoration: none; }
 
   .header {
     text-align: center;
-    border-bottom: 1px solid #000000;
-    padding-bottom: 6pt;
-    margin-bottom: 10pt;
+    margin-bottom: 9pt;
   }
 
   .header h1 {
+    margin: 0;
     font-size: 18pt;
     font-weight: bold;
     text-transform: uppercase;
-    letter-spacing: 1px;
-    margin: 0 0 4pt 0;
+    letter-spacing: -0.2pt;
   }
 
   .contact-line {
-    font-size: 9pt;
-    color: #333333;
+    margin-top: 3pt;
+    font-size: 10.5pt;
+    color: #222;
   }
 
-  .contact-line a {
-    color: #1a4fa3;
-    text-decoration: none;
-  }
+  section { margin-bottom: 9pt; }
 
-  section {
-    margin-bottom: 9pt;
-    break-inside: avoid;
-  }
-
-  h2.section-title {
-    font-size: 9.5pt;
+  .section-title {
+    margin: 0 0 4pt;
+    padding-bottom: 1pt;
+    border-bottom: 1px solid #000;
+    font-size: 11pt;
     font-weight: bold;
     text-transform: uppercase;
-    border-bottom: 1px solid #000000;
-    margin: 0 0 5pt 0;
-    padding-bottom: 2pt;
   }
 
-  /* Table-based "space-between" replacement — reliable in WeasyPrint,
-     unlike flexbox justify-content in some edge cases */
   .row {
     display: table;
     width: 100%;
   }
-  .row .left {
+
+  .left {
     display: table-cell;
+    vertical-align: baseline;
     text-align: left;
-    vertical-align: top;
   }
-  .row .right {
+
+  .right {
     display: table-cell;
+    vertical-align: baseline;
     text-align: right;
-    vertical-align: top;
     white-space: nowrap;
     padding-left: 10pt;
   }
-  .row .right.dates {
-    width: 90pt;
-  }
-  .row .right.link {
-    width: 130pt;
-    white-space: normal;
+
+  .dates {
+    font-family: "Courier New", monospace;
+    font-size: 10.5pt;
+    font-weight: normal;
+    color: #374151;
   }
 
   .entry {
-    margin-bottom: 6pt;
-    break-inside: avoid;
+    margin-bottom: 7.5pt;
   }
 
-  .entry-title {
+  .company {
     font-weight: bold;
-    font-size: 10.5pt;
   }
 
-  .entry-subtitle {
-    font-style: italic;
-    font-size: 9.5pt;
-    color: #333333;
+  .role-line {
     margin-bottom: 2pt;
-  }
-
-  .dates, .link {
-    font-family: "Courier New", monospace;
-    font-size: 9pt;
-    color: #333333;
-  }
-
-  .link a {
-    color: #1a4fa3;
-    text-decoration: none;
+    font-size: 11pt;
+    font-style: italic;
+    color: #1f2937;
   }
 
   ul.bullets {
-    margin: 2pt 0 0 0;
-    padding-left: 14pt;
+    margin: 2pt 0 0;
+    padding-left: 16pt;
   }
 
   ul.bullets li {
-    font-size: 9.5pt;
-    margin-bottom: 1.5pt;
+    margin-bottom: 2pt;
+    font-size: 11pt;
+    color: #111827;
   }
 
-  .skills-text {
-    font-size: 9.5pt;
-  }
-
-  .skills-label {
+  .project-name {
     font-weight: bold;
   }
+
+  .tech {
+    font-size: 10.5pt;
+    font-style: italic;
+    color: #374151;
+    font-weight: normal;
+  }
+
+  .project-link {
+    font-family: "Courier New", monospace;
+    font-size: 10pt;
+    white-space: nowrap;
+  }
+
+  .education-line {
+    font-size: 11pt;
+  }
+
+  .education-line strong { font-weight: bold; }
 </style>
 </head>
 <body>
 
-  <div class="header">
-    <h1>PRADEEP KUMAR JHA</h1>
-    <div class="contact-line">9110865964  |  krp18539@gmail.com &nbsp;|&nbsp; https://www.linkedin.com/in/pradeep-kumar-jha-91b529268/, https://github.com/Pradeep4157</div>
+<div class="header">
+  <h1>PRADEEP KUMAR JHA</h1>
+  <div class="contact-line"> <span> | </span><a href="mailto:krp18539@gmail.com">krp18539@gmail.com</a> <span> | 9110865964</span>
+      <span> | </span>
+      <a href="https://www.linkedin.com/in/pradeep-kumar-jha-91b529268/, https://github.com/Pradeep4157">linkedin.com/in/pradeep-kumar-jha-91b529268/, github.com/Pradeep4157</a>
   </div>
+</div>
 
+
+<section>
+  <h2 class="section-title">Education</h2>
   
-  <section>
-    <h2 class="section-title">Education</h2>
-    
+  <div class="row education-line">
+    <div class="left"><strong>PES UNIVERSITY Electronic City</strong>, Bachelor of Technology in Computer Science and Engineering</div>
+    <div class="right dates">Aug. 2021 – May 2025</div>
+  </div>
+  
+</section>
+
+
+
+<section>
+  <h2 class="section-title">Technical Skills</h2>
+  <p style="margin:0;font-size:11pt;"><strong>Languages &amp; Technologies: </strong>C++, Python, Java, JavaScript, SQL, HTML/CSS, React.js, Node.js, Express.js, Vite, Tailwind CSS, Google Gemini API, LangChain, LangGraph, YOLOv8, OpenCV, PyTorch, MongoDB, Mongoose, Git, GitHub, Docker, Kubernetes, VS Code, Postman, AWS, Vercel, Render</p>
+</section>
+
+
+
+<section>
+  <h2 class="section-title">Work Experience</h2>
+  
+  <div class="entry">
     <div class="row">
-      <div class="left"><span class="entry-title">PES UNIVERSITY Electronic City</span> — Bachelor of Technology in Computer Science and Engineering</div>
-      <div class="right dates" style="font-family: 'Courier New', monospace; font-size: 9pt; color: #333333;">Aug. 2021 – May 2025</div>
+      <div class="left company">cdcvdf fewafawef</div>
+      <div class="right dates">Unknown</div>
     </div>
-    
-  </section>
-  
-
-  
-  <section>
-    <h2 class="section-title">Technical Skills</h2>
-    <p class="skills-text"><span class="skills-label">Languages &amp; Tools: </span>C++, Python, Java, JavaScript, SQL, HTML/CSS, React.js, Node.js, Express.js, Vite, Tailwind CSS, Google Gemini API, LangChain, LangGraph, YOLOv8, OpenCV, PyTorch, MongoDB, Mongoose, Git, GitHub, Docker, Kubernetes, VS Code, Postman, AWS, Vercel, Render</p>
-  </section>
-  
-
-  
-  <section>
-    <h2 class="section-title">Experience</h2>
-    
-    <div class="entry">
-      <div class="row">
-        <div class="left entry-title">efawfeaw fewafaew</div>
-        <div class="right dates" style="font-family: 'Courier New', monospace; font-size: 9pt; color: #333333;">unknown</div>
-      </div>
-      <div class="row entry-subtitle">
-        <div class="left">cdcvdf fewafawef</div>
-        <div class="right"></div>
-      </div>
-      <ul class="bullets">
-        <li>fewafawefaw</li><li>feawfaw feawfaw</li><li>feawfaw feawfeaw</li><li>feawfawefawef</li>
-      </ul>
+    <div class="row role-line">
+      <div class="left">efawfeaw fewafaew</div>
+      <div class="right"></div>
     </div>
-    
-  </section>
-  
-
-  
-  <section>
-    <h2 class="section-title">Projects</h2>
-    
-    <div class="entry">
-      <div class="row">
-        <div class="left entry-title">
-          AI Course Generator
-          <span style="font-weight:normal; font-style:italic; font-size:9pt;"> | React.js, Node.js, Express.js, MongoDB, Mongoose, Vite, Tailwind CSS, Google Gemini API, YouTube Data API, jsPDF</span>
-        </div>
-        <div class="right link" style="font-family: 'Courier New', monospace; font-size: 9pt;">
-          <a href="https://ai-course-generator-fawn.vercel.app/" style="color: #1a4fa3; text-decoration: none;">[ai-course-generator-fawn.vercel.app/]</a>
-        </div>
-      </div>
-      <ul class="bullets">
-        <li>Built a full-stack web application where users enter any topic and Google Gemini automatically generates a complete online course with 3–6 modules and individual lessons.</li><li>Developed a dynamic lesson viewer supporting rich content including text, coding sections, interactive quizzes, and video suggestions.</li><li>Integrated the YouTube Data API to automatically find and embed relevant educational videos for each generated lesson.</li><li>Implemented a PDF export feature using html2canvas and jsPDF, allowing users to save generated lessons and quizzes for offline study.</li><li>Built authentication and persistent course storage using MongoDB and Mongoose, allowing users to securely save and access their generated courses.</li>
-      </ul>
-    </div>
-    
-    <div class="entry">
-      <div class="row">
-        <div class="left entry-title">
-          Interactive Whiteboard Application
-          <span style="font-weight:normal; font-style:italic; font-size:9pt;"> | HTML5 Canvas, React Context API, useReducer, Rough.js, Perfect-Freehand</span>
-        </div>
-        <div class="right link" style="font-family: 'Courier New', monospace; font-size: 9pt;">
-          <a href="https://white-board-proj.vercel.app/" style="color: #1a4fa3; text-decoration: none;">[white-board-proj.vercel.app/]</a>
-        </div>
-      </div>
-      <ul class="bullets">
-        <li>Developed and deployed an interactive whiteboard application on Vercel, enabling browser-based sketching, annotations, and freehand illustrations using HTML5 Canvas.</li><li>Implemented 7+ drawing tools including brush, line, rectangle, circle, arrow, text, and eraser using custom mouse-event handling.</li><li>Engineered centralized state management using React Context API and useReducer, supporting real-time canvas updates and history-based undo/redo with keyboard shortcuts.</li><li>Integrated Rough.js and Perfect-Freehand for hand-drawn shapes and smooth freehand strokes, with customizable colors, fills, brush sizes, and text formatting.</li>
-      </ul>
-    </div>
-    
-    <div class="entry">
-      <div class="row">
-        <div class="left entry-title">
-          Tic-Tac-Toe AI with Minimax and Alpha-Beta Pruning
-          <span style="font-weight:normal; font-style:italic; font-size:9pt;"> | C++, Minimax, Alpha-Beta Pruning, Bit Manipulation, Object-Oriented Programming, Heuristic Evaluation</span>
-        </div>
-        <div class="right link" style="font-family: 'Courier New', monospace; font-size: 9pt;">
-          
-        </div>
-      </div>
-      <ul class="bullets">
-        <li>Built a C++ Tic-Tac-Toe AI using the Minimax algorithm with Alpha-Beta pruning to optimize move selection and reduce unnecessary game-state evaluations.</li><li>Designed an efficient game-state evaluation function and implemented move ordering, iterative deepening, and transposition tables to improve search performance.</li><li>Optimized board representation using bitwise operations, reducing memory requirements while maintaining fast game-state evaluation.</li><li>Developed a modular console-based interface and conducted performance benchmarking across 10,000+ simulated games to validate AI correctness and efficiency.</li>
-      </ul>
-    </div>
-    
-    <div class="entry">
-      <div class="row">
-        <div class="left entry-title">
-          feawfew
-          <span style="font-weight:normal; font-style:italic; font-size:9pt;"> | fewafawe</span>
-        </div>
-        <div class="right link" style="font-family: 'Courier New', monospace; font-size: 9pt;">
-          <a href="https://fewafaew" style="color: #1a4fa3; text-decoration: none;">[fewafaew]</a>
-        </div>
-      </div>
-      <ul class="bullets">
-        <li>fewafeaw</li>
-      </ul>
-    </div>
-    
-  </section>
-  
-
-  
-  <section>
-    <h2 class="section-title">Achievements &amp; Recognition</h2>
     <ul class="bullets">
-      
-      <li><span style="font-weight:bold;">800+ Problems Solved and 2059 (Knight) on LeetCode</span>: Solved 800+ problems and achieved Knight rating (2059) on LeetCode.</li>
-      
-      <li><span style="font-weight:bold;">500+ Problems Solved and Specialist (1458) on Codeforces</span>: Solved 500+ problems and achieved Specialist rating (1458) on Codeforces.</li>
-      
-      <li><span style="font-weight:bold;">All India Rank 5 in ICPC Practice Contest</span>: Secured All India Rank 5 in ICPC Practice Contest among 529 teams.</li>
-      
-      <li><span style="font-weight:bold;">Ranked 625 in LeetCode Weekly Contest 462</span>: Ranked 625 out of all participants in LeetCode Weekly Contest 462.</li>
-      
+      <li>fewafawefaw</li><li>feawfaw feawfaw</li><li>feawfaw feawfeaw</li><li>feawfawefawef</li>
     </ul>
-  </section>
+  </div>
   
+</section>
+
+
+
+<section>
+  <h2 class="section-title">Projects</h2>
+  
+  <div class="entry">
+    <div class="row">
+      <div class="left project-name">
+        AI Course Generator
+        <span class="tech"> | React.js, Node.js, Express.js, MongoDB, Mongoose, Vite, Tailwind CSS, Google Gemini API, YouTube Data API, jsPDF</span>
+      </div>
+      <div class="right project-link">
+        
+        
+        <a href="https://ai-course-generator-fawn.vercel.app/">ai-course-generator-fawn.vercel.app/</a>
+        
+      </div>
+    </div>
+    <ul class="bullets">
+      <li>Built a full-stack web application where users enter any topic and Google Gemini automatically generates a complete online course with 3–6 modules and individual lessons.</li><li>Developed a dynamic lesson viewer supporting rich content including text, coding sections, interactive quizzes, and video suggestions.</li><li>Integrated the YouTube Data API to automatically find and embed relevant educational videos for each generated lesson.</li><li>Implemented a PDF export feature using html2canvas and jsPDF, allowing users to save generated lessons and quizzes for offline study.</li><li>Built authentication and persistent course storage using MongoDB and Mongoose, allowing users to securely save and access their generated courses.</li>
+    </ul>
+  </div>
+  
+  <div class="entry">
+    <div class="row">
+      <div class="left project-name">
+        Interactive Whiteboard Application
+        <span class="tech"> | HTML5 Canvas, React Context API, useReducer, Rough.js, Perfect-Freehand</span>
+      </div>
+      <div class="right project-link">
+        
+        
+        <a href="https://white-board-proj.vercel.app/">white-board-proj.vercel.app/</a>
+        
+      </div>
+    </div>
+    <ul class="bullets">
+      <li>Developed and deployed an interactive whiteboard application on Vercel, enabling browser-based sketching, annotations, and freehand illustrations using HTML5 Canvas.</li><li>Implemented 7+ drawing tools including brush, line, rectangle, circle, arrow, text, and eraser using custom mouse-event handling.</li><li>Engineered centralized state management using React Context API and useReducer, supporting real-time canvas updates and history-based undo/redo with keyboard shortcuts.</li><li>Integrated Rough.js and Perfect-Freehand for hand-drawn shapes and smooth freehand strokes, with customizable colors, fills, brush sizes, and text formatting.</li>
+    </ul>
+  </div>
+  
+  <div class="entry">
+    <div class="row">
+      <div class="left project-name">
+        Tic-Tac-Toe AI with Minimax and Alpha-Beta Pruning
+        <span class="tech"> | C++, Minimax, Alpha-Beta Pruning, Bit Manipulation, Object-Oriented Programming, Heuristic Evaluation</span>
+      </div>
+      <div class="right project-link">
+        
+      </div>
+    </div>
+    <ul class="bullets">
+      <li>Built a C++ Tic-Tac-Toe AI using the Minimax algorithm with Alpha-Beta pruning to optimize move selection and reduce unnecessary game-state evaluations.</li><li>Designed an efficient game-state evaluation function and implemented move ordering, iterative deepening, and transposition tables to improve search performance.</li><li>Optimized board representation using bitwise operations, reducing memory requirements while maintaining fast game-state evaluation.</li><li>Developed a modular console-based interface and conducted performance benchmarking across 10,000+ simulated games to validate AI correctness and efficiency.</li>
+    </ul>
+  </div>
+  
+  <div class="entry">
+    <div class="row">
+      <div class="left project-name">
+        feawfew
+        <span class="tech"> | fewafawe</span>
+      </div>
+      <div class="right project-link">
+        
+        
+        <a href="https://fewafaew">fewafaew</a>
+        
+      </div>
+    </div>
+    <ul class="bullets">
+      <li>fewafeaw</li>
+    </ul>
+  </div>
+  
+</section>
+
+
+
+<section>
+  <h2 class="section-title">Honors &amp; Achievements</h2>
+  <ul class="bullets">
+    
+    <li><strong>800+ Problems Solved and 2059 (Knight) on LeetCode</strong> (Contest): Solved 800+ problems and achieved Knight rating (2059) on LeetCode.</li>
+    
+    <li><strong>500+ Problems Solved and Specialist (1458) on Codeforces</strong> (Contest): Solved 500+ problems and achieved Specialist rating (1458) on Codeforces.</li>
+    
+    <li><strong>All India Rank 5 in ICPC Practice Contest</strong> (Contest): Secured All India Rank 5 in ICPC Practice Contest among 529 teams.</li>
+    
+    <li><strong>Ranked 625 in LeetCode Weekly Contest 462</strong> (Contest): Ranked 625 out of all participants in LeetCode Weekly Contest 462.</li>
+    
+  </ul>
+</section>
+
 
 </body>
 </html>

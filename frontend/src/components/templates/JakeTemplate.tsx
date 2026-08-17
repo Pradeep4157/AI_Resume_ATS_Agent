@@ -40,117 +40,185 @@ interface NormalizedResume {
 
 const formatLink = (link: string) => {
   const href = link.startsWith("http") ? link : `https://${link}`;
-  const display = link.replace(/^https?:\/\/(www\.)?/, "").replace(/\/$/, "");
+  const display = link
+    .replace(/^https?:\/\/(www\.)?/, "")
+    .replace(/\/$/, "");
+
   return { href, display };
 };
 
 export function JakeTemplate({ data }: { data: NormalizedResume }) {
   if (!data) return null;
 
-  const { basics, skills, experience, projects, achievements, education } = data;
+  const {
+    basics,
+    skills,
+    experience,
+    projects,
+    achievements,
+    education,
+  } = data;
 
   const linksList = Array.isArray(basics?.links)
     ? basics.links
     : typeof basics?.links === "string" && basics.links
-    ? [basics.links]
-    : [];
-
-  const contactParts = [basics?.phone, basics?.email, basics?.location].filter(Boolean);
+      ? [basics.links]
+      : [];
 
   return (
-    <div className="bg-white text-black p-[12mm] text-[10.5pt] leading-[1.4]" style={{ fontFamily: "Helvetica, Arial, sans-serif" }}>
-      {/* Header */}
-      <div className="text-center border-b border-black pb-[6pt] mb-[10pt]">
-        <h1 className="text-[18pt] font-bold uppercase tracking-wide m-0 mb-[4pt]">{basics?.name}</h1>
-        <div className="text-[9pt] text-[#333333]">
-          {contactParts.join("  |  ")}
-          {linksList.length > 0 && (
+    <div
+      className="bg-white text-black px-[12mm] py-[10mm] text-[10pt] leading-[1.25]"
+      style={{ fontFamily: "Arial, Helvetica, sans-serif" }}
+    >
+      {/* ================= HEADER ================= */}
+      <header className="text-center mb-[8pt]">
+        <h1 className="text-[18pt] font-bold tracking-tight leading-none mb-[3pt]">
+          {basics?.name}
+        </h1>
+
+        <div className="flex flex-wrap justify-center items-center gap-x-[4pt] text-[9pt] leading-[1.15]">
+          {basics?.phone && <span>{basics.phone}</span>}
+
+          {basics?.email && (
             <>
-              {contactParts.length > 0 && <span>&nbsp;|&nbsp;</span>}
-              {linksList.join(", ")}
+              {basics?.phone && <span>|</span>}
+              <a
+                href={`mailto:${basics.email}`}
+                className="text-black no-underline hover:underline"
+              >
+                {basics.email}
+              </a>
             </>
           )}
+
+          {basics?.location && (
+            <>
+              {(basics?.phone || basics?.email) && <span>|</span>}
+              <span>{basics.location}</span>
+            </>
+          )}
+
+          {linksList.map((link, index) => {
+            const { href, display } = formatLink(link);
+
+            return (
+              <React.Fragment key={index}>
+                <span>|</span>
+                <a
+                  href={href}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="text-black no-underline hover:underline"
+                >
+                  {display}
+                </a>
+              </React.Fragment>
+            );
+          })}
         </div>
-      </div>
+      </header>
 
-      {/* Education */}
+      {/* ================= EDUCATION ================= */}
       {education?.length > 0 && (
-        <section className="mb-[9pt] break-inside-avoid">
-          <h2 className="text-[9.5pt] font-bold uppercase border-b border-black pb-[2pt] mb-[5pt]">Education</h2>
-          {education.map((edu, idx) => (
-            <div key={idx} className="flex justify-between items-start">
-              <div className="text-left">
-                <span className="font-bold text-[10.5pt]">{edu.institution}</span> — {edu.degree}
+        <section className="mb-[7pt]">
+          <SectionTitle title="Education" />
+
+          {education.map((edu, index) => (
+            <div
+              key={index}
+              className="flex justify-between items-baseline mb-[2pt]"
+            >
+              <div className="min-w-0">
+                <span className="font-bold">
+                  {edu.institution}
+                </span>
+                <span> — {edu.degree}</span>
               </div>
-              <div className="text-right whitespace-nowrap pl-[10pt] font-mono text-[9pt] text-[#333333] w-[90pt] shrink-0">
+
+              <span className="ml-[10pt] shrink-0 text-[9pt]">
                 {edu.dates}
-              </div>
+              </span>
             </div>
           ))}
         </section>
       )}
 
-      {/* Skills */}
-      {skills?.length > 0 && (
-        <section className="mb-[9pt] break-inside-avoid">
-          <h2 className="text-[9.5pt] font-bold uppercase border-b border-black pb-[2pt] mb-[5pt]">Technical Skills</h2>
-          <p className="text-[9.5pt]">
-            <span className="font-bold">Languages &amp; Tools: </span>
-            {skills.join(", ")}
-          </p>
-        </section>
-      )}
-
-      {/* Experience */}
+      {/* ================= EXPERIENCE ================= */}
       {experience?.length > 0 && (
-        <section className="mb-[9pt]">
-          <h2 className="text-[9.5pt] font-bold uppercase border-b border-black pb-[2pt] mb-[5pt]">Experience</h2>
+        <section className="mb-[7pt]">
+          <SectionTitle title="Experience" />
+
           {experience.map((exp) => (
-            <div key={exp.id || exp.role} className="mb-[6pt] break-inside-avoid">
-              <div className="flex justify-between items-start">
-                <div className="font-bold text-[10.5pt] text-left">{exp.role}</div>
-                <div className="text-right whitespace-nowrap pl-[10pt] font-mono text-[9pt] text-[#333333] w-[90pt] shrink-0">
+            <div
+              key={exp.id || exp.role}
+              className="mb-[5pt]"
+            >
+              {/* Company + Dates */}
+              <div className="flex justify-between items-baseline">
+                <span className="font-bold">
+                  {exp.company}
+                </span>
+
+                <span className="ml-[10pt] shrink-0 text-[9pt]">
                   {exp.dates}
-                </div>
+                </span>
               </div>
-              <div className="flex justify-between items-start italic text-[9.5pt] text-[#333333] mb-[2pt]">
-                <div>{exp.company}</div>
-                <div>{exp.location || ""}</div>
+
+              {/* Role + Location */}
+              <div className="flex justify-between items-baseline italic text-[9.5pt]">
+                <span>{exp.role}</span>
+
+                {exp.location && (
+                  <span className="ml-[10pt] shrink-0">
+                    {exp.location}
+                  </span>
+                )}
               </div>
-              <ul className="list-disc list-outside ml-[14pt] mt-[2pt] space-y-[1.5pt]">
-                {exp.bullets?.map((b, i) => (
-                  <li key={i} className="text-[9.5pt]">{b}</li>
-                ))}
-              </ul>
+
+              {/* Bullets */}
+              {exp.bullets?.length > 0 && (
+                <ul className="list-disc ml-[15pt] mt-[1.5pt] space-y-[0.5pt]">
+                  {exp.bullets.map((bullet, index) => (
+                    <li
+                      key={index}
+                      className="pl-[1pt] text-[9.5pt]"
+                    >
+                      {bullet}
+                    </li>
+                  ))}
+                </ul>
+              )}
             </div>
           ))}
         </section>
       )}
 
-      {/* Projects */}
+      {/* ================= PROJECTS ================= */}
       {projects?.length > 0 && (
-        <section className="mb-[9pt]">
-          <h2 className="text-[9.5pt] font-bold uppercase border-b border-black pb-[2pt] mb-[5pt]">
-            Projects
-          </h2>
+        <section className="mb-[7pt]">
+          <SectionTitle title="Projects" />
 
-          {projects.map((proj) => {
-            const linkInfo = proj.link ? formatLink(proj.link) : null;
+          {projects.map((project) => {
+            const linkInfo = project.link
+              ? formatLink(project.link)
+              : null;
 
             return (
               <div
-                key={proj.id || proj.name}
-                className="mb-[6pt] break-inside-avoid"
+                key={project.id || project.name}
+                className="mb-[5pt]"
               >
-                <div className="flex justify-between items-start">
+                {/* Project + Link */}
+                <div className="flex justify-between items-baseline">
+                  <div className="min-w-0">
+                    <span className="font-bold">
+                      {project.name}
+                    </span>
 
-                  <div className="font-bold text-[10.5pt] text-left">
-                    {proj.name}
-
-                    {proj.tech_stack?.length > 0 && (
-                      <span className="font-normal italic text-[9pt]">
+                    {project.tech_stack?.length > 0 && (
+                      <span className="italic text-[9pt]">
                         {" | "}
-                        {proj.tech_stack.join(", ")}
+                        {project.tech_stack.join(", ")}
                       </span>
                     )}
                   </div>
@@ -160,42 +228,91 @@ export function JakeTemplate({ data }: { data: NormalizedResume }) {
                       href={linkInfo.href}
                       target="_blank"
                       rel="noreferrer"
-                      className="text-right whitespace-normal pl-[10pt] font-mono text-[9pt] text-[#1a4fa3] no-underline hover:underline w-[130pt] shrink-0"
+                      className="ml-[10pt] shrink-0 text-[8.5pt] text-black no-underline hover:underline"
                     >
-                      [{linkInfo.display}]
+                      {linkInfo.display}
                     </a>
                   )}
-
                 </div>
 
-                <ul className="list-disc list-outside ml-[14pt] mt-[2pt] space-y-[1.5pt]">
-                  {proj.bullets?.map((b, i) => (
-                    <li key={i} className="text-[9.5pt]">
-                      {b}
-                    </li>
-                  ))}
-                </ul>
+                {/* Project bullets */}
+                {project.bullets?.length > 0 && (
+                  <ul className="list-disc ml-[15pt] mt-[1.5pt] space-y-[0.5pt]">
+                    {project.bullets.map((bullet, index) => (
+                      <li
+                        key={index}
+                        className="pl-[1pt] text-[9.5pt]"
+                      >
+                        {bullet}
+                      </li>
+                    ))}
+                  </ul>
+                )}
               </div>
             );
           })}
         </section>
       )}
 
-      {/* Achievements */}
+      {/* ================= TECHNICAL SKILLS ================= */}
+      {skills?.length > 0 && (
+        <section className="mb-[7pt]">
+          <SectionTitle title="Technical Skills" />
+
+          <p className="text-[9.5pt]">
+            <span className="font-bold">
+              Languages &amp; Technologies:
+            </span>{" "}
+            {skills.join(", ")}
+          </p>
+        </section>
+      )}
+
+      {/* ================= ACHIEVEMENTS ================= */}
       {achievements?.length > 0 && (
-        <section className="break-inside-avoid">
-          <h2 className="text-[9.5pt] font-bold uppercase border-b border-black pb-[2pt] mb-[5pt]">
-            Achievements &amp; Recognition
-          </h2>
-          <ul className="list-disc list-outside ml-[14pt] space-y-[1.5pt]">
-            {achievements.map((ach) => (
-              <li key={ach.id || ach.title} className="text-[9.5pt]">
-                <span className="font-bold">{ach.title}</span>: {ach.details?.join(" • ")}
+        <section>
+          <SectionTitle title="Honors & Achievements" />
+
+          <ul className="list-disc ml-[15pt] space-y-[0.5pt]">
+            {achievements.map((achievement) => (
+              <li
+                key={achievement.id || achievement.title}
+                className="pl-[1pt] text-[9.5pt]"
+              >
+                <span className="font-bold">
+                  {achievement.title}
+                </span>
+
+                {achievement.category && (
+                  <span> ({achievement.category})</span>
+                )}
+
+                {achievement.details?.length > 0 && (
+                  <span>
+                    : {achievement.details.join(" • ")}
+                  </span>
+                )}
               </li>
             ))}
           </ul>
         </section>
       )}
+    </div>
+  );
+}
+
+/* ============================================================
+   JAKE-STYLE SECTION HEADING
+   ============================================================ */
+
+function SectionTitle({ title }: { title: string }) {
+  return (
+    <div className="flex items-baseline mb-[3pt]">
+      <h2 className="text-[10pt] font-bold uppercase tracking-[0.02em] whitespace-nowrap">
+        {title}
+      </h2>
+
+      <div className="ml-[5pt] flex-1 border-b border-black" />
     </div>
   );
 }

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import type {
   AgentState,
   ResumeData,
@@ -11,7 +11,31 @@ import type {
   PolishedBullets,
 } from "../types/resume";
 
-const API_BASE_URL = "http://localhost:8000";
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+const STORAGE_KEY = "resumax_agent_state";
+
+function loadPersistedState(): AgentState | null {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    return raw ? JSON.parse(raw) : null;
+  } catch {
+    return null;
+  }
+}
+
+function persistState(state: AgentState | null) {
+  try {
+    if (state) {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    } else {
+      localStorage.removeItem(STORAGE_KEY);
+    }
+  } catch {
+    // localStorage can throw in private-browsing/quota-exceeded cases — fail silently, app still works, just no persistence
+  }
+}
+
+
 
 // Helper: generate the next sequential id for a section, e.g. "proj_3"
 function nextId(prefix: string, items: { id: string }[]): string {
@@ -20,10 +44,20 @@ function nextId(prefix: string, items: { id: string }[]): string {
 
 
 
+
 export function useAgentStream() {
-  const [state, setState] = useState<AgentState | null>(null);
+  const [state, setState] = useState<AgentState | null>(() => loadPersistedState());
+  useEffect(() => {
+    persistState(state);
+  }, [state]);
   const [isProcessing, setIsProcessing] = useState(false);
   const [isComplete, setIsComplete] = useState(false);
+  const resetSession = () => {
+    setState(null);
+    setIsProcessing(false);
+    setIsComplete(false);
+    persistState(null);
+  };
 
   const exportPdf = async (template: string = "jake") => {
     if (!state?.parsed_resume) return;
@@ -60,6 +94,10 @@ export function useAgentStream() {
 
   // Step 1: Send Resume & JD to /api/analyze
   const startAnalysis = async (resumeInput: string | File, targetJd: string) => {
+    setState(null);          // clear any stale/previous session immediately
+    persistState(null);      // and wipe it from localStorage too, so a mid-load refresh doesn't resurrect old data
+    setIsProcessing(true);
+    setIsComplete(false);
     setIsProcessing(true);
     setIsComplete(false);
 
@@ -249,5 +287,6 @@ export function useAgentStream() {
     sendResponse,
     reformatAnswer,
     exportPdf,
+    resetSession,
   };
 }

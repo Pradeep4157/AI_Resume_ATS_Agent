@@ -89,7 +89,7 @@ export function ExecutiveTemplate({ data }: { data: NormalizedResume }) {
                 <span className="text-[12.5px]">{exp.role}</span>
                 <span className="text-[11px] font-mono text-slate-600">{exp.dates}</span>
               </div>
-              <div className="flex justify-between text-[11px] text-slate-700 italic mb-1">
+              <div className="flex justify-between text-[11px] text-slate-700 mb-1">
                 <span>{exp.company}</span>
                 {exp.location && <span>{exp.location}</span>}
               </div>

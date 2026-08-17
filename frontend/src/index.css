@@ -76,7 +76,7 @@
   /* Set standard A4 page size and zero out browser default print margins */
   @page {
     size: A4 portrait;
-    margin: 0;
+    margin: 15mm 12mm;  /* top/bottom 15mm, left/right 12mm — adjust to taste */
   }
 
   /* Reset body styling */
@@ -121,5 +121,46 @@
     border: none !important;
     background: #ffffff !important;
     border-radius: 0 !important;
+  }
+}
+
+/* Landing page micro-interactions */
+
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fade-up-delay {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-up {
+  animation: fade-up 0.7s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.animate-fade-up-delay {
+  animation: fade-up-delay 0.8s 0.08s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-fade-up,
+  .animate-fade-up-delay {
+    animation: none;
   }
 }

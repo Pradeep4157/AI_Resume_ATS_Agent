@@ -97,6 +97,9 @@ def health_check():
 async def export_pdf(payload: ExportPdfRequest):
     template_file_map = {
         "jake": "jake_resume.html",
+        "faang": "faang_resume.html",
+        "compact": "compact_resume.html",
+        "executive": "executive_resume.html",
     }
 
     template_file = template_file_map.get(payload.template)
